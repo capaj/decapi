@@ -14,7 +14,7 @@ function validateRootSchemaField(targetInstance: Object, fieldName: string) {
     throw new SchemaFieldError(
       targetInstance.constructor,
       fieldName,
-      `Every root schema field must regular class function`,
+      `Every root schema field must regular class function`
     );
   }
 }
@@ -26,7 +26,7 @@ function requireSchemaRoot(target: Function, fieldName: string) {
   throw new SchemaFieldError(
     target,
     fieldName,
-    `Root field must be registered on class decorated with @Schema`,
+    `Root field must be registered on class decorated with @Schema`
   );
 }
 
@@ -37,11 +37,18 @@ export function Query(options?: FieldOptions): PropertyDecorator {
     Field(options)(targetInstance, fieldName);
     const fieldCompiler = () => {
       requireSchemaRoot(targetInstance.constructor, fieldName);
-      const compiledField = compileFieldConfig(targetInstance.constructor, fieldName);
+      const compiledField = compileFieldConfig(
+        targetInstance.constructor,
+        fieldName
+      );
       compiledField.type;
       return compiledField;
     };
-    queryFieldsRegistry.set(targetInstance.constructor, fieldName, fieldCompiler);
+    queryFieldsRegistry.set(
+      targetInstance.constructor,
+      fieldName,
+      fieldCompiler
+    );
   };
 }
 
@@ -49,10 +56,17 @@ export function Mutation(options?: FieldOptions): PropertyDecorator {
   return (targetInstance: Object, fieldName: string) => {
     Field(options)(targetInstance, fieldName);
     const fieldCompiler = () => {
-      const compiledField = compileFieldConfig(targetInstance.constructor, fieldName);
+      const compiledField = compileFieldConfig(
+        targetInstance.constructor,
+        fieldName
+      );
       compiledField.type;
       return compiledField;
     };
-    mutationFieldsRegistry.set(targetInstance.constructor, fieldName, fieldCompiler);
+    mutationFieldsRegistry.set(
+      targetInstance.constructor,
+      fieldName,
+      fieldCompiler
+    );
   };
 }

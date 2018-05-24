@@ -1,4 +1,9 @@
-import { isOutputType, GraphQLType, GraphQLOutputType, GraphQLNonNull } from 'graphql';
+import {
+  isOutputType,
+  GraphQLType,
+  GraphQLOutputType,
+  GraphQLNonNull,
+} from 'graphql';
 import { FieldError } from '../index';
 
 import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType';
@@ -11,7 +16,7 @@ import {
 export function resolveRegisteredOrInferedType(
   target: Function,
   fieldName: string,
-  forcedType?: any,
+  forcedType?: any
 ) {
   if (forcedType) {
     return resolveTypeOrThrow(forcedType, target, fieldName);
@@ -22,19 +27,22 @@ export function resolveRegisteredOrInferedType(
 export function validateResolvedType(
   target: Function,
   fieldName: string,
-  type: GraphQLType,
+  type: GraphQLType
 ): type is GraphQLOutputType {
   if (!isOutputType(type)) {
     throw new FieldError(
       target,
       fieldName,
-      `Validation of type failed. Resolved type for @Field must be GraphQLOutputType.`,
+      `Validation of type failed. Resolved type for @Field must be GraphQLOutputType.`
     );
   }
   return true;
 }
 
-export function enhanceType(originalType: GraphQLOutputType, isNullable: boolean) {
+export function enhanceType(
+  originalType: GraphQLOutputType,
+  isNullable: boolean
+) {
   let finalType = originalType;
   if (!isNullable) {
     finalType = new GraphQLNonNull(finalType);

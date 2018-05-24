@@ -1,7 +1,7 @@
 import { GraphQLEnumValueConfigMap } from 'graphql';
 
 export function convertNativeEnumToGraphQLEnumValues(
-  enumDef: any,
+  enumDef: any
 ): GraphQLEnumValueConfigMap {
   const valueConfigMap: GraphQLEnumValueConfigMap = {};
   Object.keys(enumDef).map(key => {

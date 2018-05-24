@@ -18,7 +18,7 @@ export function SchemaRoot(config: SchemaRootConfig = {}): ClassDecorator {
 export function Schema(config: SchemaRootConfig = {}) {
   showDeprecationWarning(
     'Use @SchemaRoot instead and compile like: compileSchema({ roots: [RootA, RootB] })',
-    Schema,
+    Schema
   );
   return SchemaRoot(config);
 }

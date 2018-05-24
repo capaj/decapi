@@ -15,9 +15,12 @@ import { validateNotInferableField } from './fieldType';
 
 export function compileFieldConfig(
   target: Function,
-  fieldName: string,
+  fieldName: string
 ): GraphQLFieldConfig<any, any, any> {
-  const { type, description, isNullable } = fieldsRegistry.get(target, fieldName);
+  const { type, description, isNullable } = fieldsRegistry.get(
+    target,
+    fieldName
+  );
   const args = compileFieldArgs(target, fieldName);
 
   const resolvedType = resolveRegisteredOrInferedType(target, fieldName, type);
@@ -51,7 +54,7 @@ function getAllFields(target: Function) {
       throw new FieldError(
         target,
         fieldName,
-        `Given field is root field (@Query or @Mutation) not registered inside @Schema type. `,
+        `Given field is root field (@Query or @Mutation) not registered inside @Schema type. `
       );
     }
 

@@ -10,7 +10,7 @@ export interface HookExecutorResolverArgs {
 }
 
 export type HookExecutor<Result = void> = (
-  data: HookExecutorResolverArgs,
+  data: HookExecutorResolverArgs
 ) => Result | Promise<Result>;
 
 export interface AllRegisteredHooks {
@@ -32,13 +32,13 @@ export const fieldAfterHooksRegistry = new DeepWeakMap<
 export function registerFieldBeforeHook(
   target: Function,
   fieldName: string,
-  hook: HookExecutor,
+  hook: HookExecutor
 ) {
   if (!hook) {
     throw new HookError(
       target,
       fieldName,
-      `Field @Before hook function must be supplied.`,
+      `Field @Before hook function must be supplied.`
     );
   }
   const currentHooks = fieldBeforeHooksRegistry.get(target, fieldName) || [];
@@ -48,13 +48,13 @@ export function registerFieldBeforeHook(
 export function registerFieldAfterHook(
   target: Function,
   fieldName: string,
-  hook: HookExecutor,
+  hook: HookExecutor
 ) {
   if (!hook) {
     throw new HookError(
       target,
       fieldName,
-      `Field @After hook function must be supplied.`,
+      `Field @After hook function must be supplied.`
     );
   }
   const currentHooks = fieldAfterHooksRegistry.get(target, fieldName) || [];

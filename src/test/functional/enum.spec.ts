@@ -22,7 +22,7 @@ class Hello {
   @Field()
   world(
     @Arg({ type: TestEnum })
-    name: TestEnum,
+    name: TestEnum
   ): string {
     return `Hello, ${name}`;
   }
@@ -48,7 +48,7 @@ describe('Query with enums', () => {
             world(name: Foob)
           }
         }
-      `,
+      `
     );
 
     expect(result.errors).toBeDefined();

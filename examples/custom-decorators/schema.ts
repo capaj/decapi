@@ -10,7 +10,7 @@ function StringWithDescription(additionalDescription: string) {
 function ExplicitNameObjectType(name: string) {
   if (!name) {
     throw new Error(
-      `Classes decorated with @ExplicitNameObjectType require explicit name instead of one guessed from class name.`,
+      `Classes decorated with @ExplicitNameObjectType require explicit name instead of one guessed from class name.`
     );
   }
   return ObjectType({ name });

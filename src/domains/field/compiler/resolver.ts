@@ -1,5 +1,9 @@
 import { GraphQLFieldResolver } from 'graphql';
-import { InjectorsIndex, InjectorResolver, injectorRegistry } from '~/domains/inject';
+import {
+  InjectorsIndex,
+  InjectorResolver,
+  injectorRegistry,
+} from '~/domains/inject';
 import {
   fieldAfterHooksRegistry,
   fieldBeforeHooksRegistry,
@@ -22,7 +26,7 @@ async function performHooksExecution(
   source: any,
   args: any,
   context: any,
-  info: any,
+  info: any
 ) {
   if (!hooks) {
     return;
@@ -31,13 +35,13 @@ async function performHooksExecution(
   return await Promise.all(
     hooks.map(hook => {
       return hook({ source, args, context, info });
-    }),
+    })
   );
 }
 
 function computeFinalArgs(
   func: Function,
-  { args, injectors, injectorToValueMapper }: ComputeArgsOptions,
+  { args, injectors, injectorToValueMapper }: ComputeArgsOptions
 ) {
   const paramNames = getParameterNames(func);
   return paramNames.map((paramName, index) => {
@@ -57,7 +61,7 @@ function computeFinalArgs(
 
 export function compileFieldResolver(
   target: Function,
-  fieldName: string,
+  fieldName: string
 ): GraphQLFieldResolver<any, any> {
   // const config = fieldsRegistry.get(target, fieldName);
   const injectors = injectorRegistry.getAll(target)[fieldName];
@@ -66,7 +70,8 @@ export function compileFieldResolver(
 
   return async (source: any, args = null, context = null, info = null) => {
     await performHooksExecution(beforeHooks, source, args, context, info);
-    const instanceField = (source && source[fieldName]) || target.prototype[fieldName];
+    const instanceField =
+      (source && source[fieldName]) || target.prototype[fieldName];
 
     if (typeof instanceField !== 'function') {
       await performHooksExecution(afterHooks, source, args, context, info);

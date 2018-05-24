@@ -2,7 +2,10 @@ import { GraphQLObjectType } from 'graphql';
 import { ObjectTypeError, objectTypeRegistry } from '../index';
 
 import { compileAllFields, fieldsRegistry } from '~/domains/field';
-import { createCachedThunk, getClassWithAllParentClasses } from '~/services/utils';
+import {
+  createCachedThunk,
+  getClassWithAllParentClasses,
+} from '~/services/utils';
 
 const compileOutputTypeCache = new WeakMap<Function, GraphQLObjectType>();
 
@@ -28,7 +31,7 @@ function createTypeFieldsGetter(target: Function) {
 
 export function compileObjectTypeWithConfig(
   target: Function,
-  config: TypeOptions,
+  config: TypeOptions
 ): GraphQLObjectType {
   if (compileOutputTypeCache.has(target)) {
     return compileOutputTypeCache.get(target);
@@ -48,7 +51,7 @@ export function compileObjectType(target: Function) {
   if (!objectTypeRegistry.has(target)) {
     throw new ObjectTypeError(
       target,
-      `Class is not registered. Make sure it's decorated with @ObjectType decorator`,
+      `Class is not registered. Make sure it's decorated with @ObjectType decorator`
     );
   }
 

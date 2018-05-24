@@ -24,7 +24,7 @@ describe('Arguments with @Arg', () => {
       @Field()
       bar(
         @Arg({ description: 'test' })
-        baz: string,
+        baz: string
       ): string {
         return baz;
       }
@@ -46,7 +46,7 @@ describe('Arguments with @Arg', () => {
       new Foo(),
       { zzz: 'zzz', aaa: 'aaa' },
       null,
-      null,
+      null
     );
     expect(resolvedValue).toEqual('aaa.zzz');
   });
@@ -61,7 +61,12 @@ describe('Arguments with @Arg', () => {
       }
     }
     const { bar } = compileObjectType(Foo).getFields();
-    const resolvedValue = await bar.resolve(new Foo(), { param: 'param' }, null, null);
+    const resolvedValue = await bar.resolve(
+      new Foo(),
+      { param: 'param' },
+      null,
+      null
+    );
     expect(resolvedValue).toEqual('instance.param');
   });
 
@@ -73,12 +78,14 @@ describe('Arguments with @Arg', () => {
         @Arg({ isNullable: true })
         baz: string,
         @Arg({ isNullable: false })
-        bazRequired: string,
+        bazRequired: string
       ): string {
         return baz;
       }
     }
-    const [bazArg, bazRequiredArg] = compileObjectType(Foo).getFields().bar.args;
+    const [bazArg, bazRequiredArg] = compileObjectType(
+      Foo
+    ).getFields().bar.args;
     expect(bazArg.type).toBe(GraphQLString);
     expect(bazRequiredArg.type).toEqual(new GraphQLNonNull(GraphQLString));
   });

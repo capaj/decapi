@@ -34,7 +34,9 @@ function getDefaultResolver(types: GraphQLObjectType[]): UnionTypeResolver {
 /**
  * Resolves type, and if needed, tries to resolve it using typegql-aware types
  */
-function enhanceTypeResolver(originalResolver: UnionTypeResolver): UnionTypeResolver {
+function enhanceTypeResolver(
+  originalResolver: UnionTypeResolver
+): UnionTypeResolver {
   return (value, context, info) => {
     const rawResolvedType = originalResolver(value, context, info);
     return resolveType(rawResolvedType);
@@ -43,13 +45,13 @@ function enhanceTypeResolver(originalResolver: UnionTypeResolver): UnionTypeReso
 
 function validateResolvedTypes(
   target: Function,
-  types: GraphQLType[],
+  types: GraphQLType[]
 ): types is GraphQLObjectType[] {
   for (let type of types) {
     if (!isObjectType(type)) {
       throw new UnionError(
         target,
-        `Every union type must be of type GraphQLObjectType. '${type}' is not.`,
+        `Every union type must be of type GraphQLObjectType. '${type}' is not.`
       );
     }
   }

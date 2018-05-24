@@ -1,7 +1,14 @@
 import * as express from 'express';
 import { GraphQLResolveInfo } from 'graphql';
 import * as getFieldNames from 'graphql-list-fields';
-import { Schema, Query, ObjectType, Field, Inject, compileSchema } from 'typegql';
+import {
+  Schema,
+  Query,
+  ObjectType,
+  Field,
+  Inject,
+  compileSchema,
+} from 'typegql';
 import * as graphqlHTTP from 'express-graphql';
 
 function NeededFields(filter: string[] = []) {
@@ -24,7 +31,10 @@ function NeededFields(filter: string[] = []) {
 @ObjectType()
 class LazyObject {
   constructor(neededFields: string[]) {
-    console.log('I will only perform expensive operations for fields:', neededFields);
+    console.log(
+      'I will only perform expensive operations for fields:',
+      neededFields
+    );
 
     if (neededFields.includes['foo']) {
       this.foo = 'I have foo';
@@ -43,7 +53,7 @@ class SuperSchema {
   @Query()
   foo(
     @NeededFields(['foo', 'bar'])
-    neededFields: string[], // this arg will tell if `foo` and `bar` are needed
+    neededFields: string[] // this arg will tell if `foo` and `bar` are needed
   ): LazyObject {
     console.log('Needed fields are: ', { neededFields });
     return new LazyObject(neededFields);
@@ -59,6 +69,6 @@ app.use(
   graphqlHTTP({
     schema: compiledSchema,
     graphiql: true,
-  }),
+  })
 );
 app.listen(3000);

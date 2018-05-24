@@ -11,7 +11,7 @@ app.use(
   graphqlHTTP({
     schema,
     graphiql: true,
-  }),
+  })
 );
 app.listen(3000, () => {
   console.log('Api ready on port 3000');

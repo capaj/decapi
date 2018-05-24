@@ -18,7 +18,7 @@ describe('@Inject', () => {
       @Field()
       bar(
         @Inject(() => 'baz')
-        test: string,
+        test: string
       ): string {
         return test;
       }
@@ -36,7 +36,7 @@ describe('@Inject', () => {
       @Field()
       bar(
         @Inject(() => 'baz')
-        test: string,
+        test: string
       ): string {
         return test;
       }
@@ -53,19 +53,25 @@ describe('@Inject', () => {
       bar(
         @Arg()
         @Inject(() => 'baz')
-        test: string,
+        test: string
       ): string {
         return test;
       }
     }
-    expect(() => compileObjectType(Foo).getFields()).toThrowErrorMatchingSnapshot();
+    expect(() =>
+      compileObjectType(Foo).getFields()
+    ).toThrowErrorMatchingSnapshot();
   });
 
   it('Will properly inject Context, Source and Info', async () => {
     @ObjectType()
     class Foo {
       @Field()
-      bar(@Context context: string, @Source source: Foo, @Info info: any): number {
+      bar(
+        @Context context: string,
+        @Source source: Foo,
+        @Info info: any
+      ): number {
         if (context === 'context' && source === this && info === null) {
           return 42;
         }
@@ -83,16 +89,16 @@ describe('@Inject', () => {
         @Arg() zzz: string,
         @Context context: string,
         @Inject(() => 42)
-        answer: number,
+        answer: number
       ): string {
         return `${zzz}.${context}.${answer}`;
       }
     }
     const { bar } = compileObjectType(Foo).getFields();
     expect(bar.args.length).toEqual(1);
-    expect(await bar.resolve(new Foo(), { zzz: 'zzz' }, 'context', null)).toEqual(
-      'zzz.context.42',
-    );
+    expect(
+      await bar.resolve(new Foo(), { zzz: 'zzz' }, 'context', null)
+    ).toEqual('zzz.context.42');
   });
 
   it('Will allow `this` inside injectors', async () => {
@@ -104,7 +110,7 @@ describe('@Inject', () => {
         @Inject(function() {
           return this.test;
         })
-        baz: string,
+        baz: string
       ): string {
         return baz;
       }
@@ -123,7 +129,7 @@ describe('@Inject', () => {
           await wait(1);
           return 'async';
         })
-        baz: string,
+        baz: string
       ): string {
         return baz;
       }

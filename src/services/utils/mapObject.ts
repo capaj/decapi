@@ -4,7 +4,7 @@ export interface Map<Type> {
 
 export function mapObject<SourceItem, ResultItem>(
   input: Map<SourceItem>,
-  mapper: (item: SourceItem, key: string) => ResultItem,
+  mapper: (item: SourceItem, key: string) => ResultItem
 ): Map<ResultItem> {
   const result: Map<ResultItem> = {};
   Object.keys(input).map(key => {

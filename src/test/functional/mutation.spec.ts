@@ -49,7 +49,7 @@ describe('Mutation', () => {
             world(name: 2)
           }
         }
-      `,
+      `
     );
     expect(result.errors).toBeDefined();
     expect(result.errors).toMatchSnapshot();
@@ -64,7 +64,7 @@ describe('Mutation', () => {
             world(name: "Bob")
           }
         }
-      `,
+      `
     );
 
     expect(result).toEqual({ data: { deepInput: { world: 'Hola, Bob' } } });
