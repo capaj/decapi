@@ -9,7 +9,8 @@
     "test:watch": "jest --watch",
     "build:rollup": "rollup src/index.ts -c",
     "build:types": "ttsc --project ttsconfig.json",
-    "build": "rimraf types lib && yarn run build:rollup && yarn run build:types",
+    "build":
+      "rimraf types lib && yarn run build:rollup && yarn run build:types",
     "prepublishOnly": "rimraf types lib && yarn build",
     "docs": "gitbook serve",
     "docs:build": "gitbook build ./docs",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^0.13.0",
+    "@types/graphql-iso-date": "^3.3.0",
     "@types/jest": "^22.2.3",
     "@types/node": "^10.1.2",
     "@types/object-path": "^0.9.29",
@@ -37,10 +39,11 @@
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-typescript2": "^0.11.1",
     "ttypescript": "^1.2.0",
-    "typescript": "^2.8.1"
+    "typescript": "^3.0.3"
   },
   "dependencies": {
     "graphql": "^0.13.2",
+    "graphql-iso-date": "^3.5.0",
     "object-path": "^0.11.4",
     "reflect-metadata": "^0.1.12"
   }
