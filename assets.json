@@ -1,7 +1,7 @@
 {
-  "app.js": "/decapi/static/js/app.c6e9d404.js",
-  "summary.js": "/decapi/static/js/summary.a2d56d95.js",
-  "readme.js": "/decapi/static/js/readme.5d72e438.js",
+  "app.js": "/decapi/static/js/app.a7439b75.js",
+  "readme.js": "/decapi/static/js/readme.60282dda.js",
+  "summary.js": "/decapi/static/js/summary.09f1f6d8.js",
   "explore-arg.js": "/decapi/static/js/explore-arg.dcee74c9.js",
   "explore-duplex-type-and-duplex-field.js": "/decapi/static/js/explore-duplex-type-and-duplex-field.3d49fe6c.js",
   "explore-input-type-and-input-field.js": "/decapi/static/js/explore-input-type-and-input-field.a655763d.js",
@@ -22,6 +22,6 @@
   "explore-schema-compile-schema.js": "/decapi/static/js/explore-schema-compile-schema.a3382108.js",
   "explore-schema-query-and-mutation.js": "/decapi/static/js/explore-schema-query-and-mutation.bc89444b.js",
   "vendors.js": "/decapi/static/js/vendors.bd8c43a6.js",
-  "runtime~app.js": "/decapi/static/js/runtime~app.2ce3f4c8dbd72cdc748d.js",
+  "runtime~app.js": "/decapi/static/js/runtime~app.6f899980989759551fdc.js",
   "index.html": "/decapi/index.html"
 }
