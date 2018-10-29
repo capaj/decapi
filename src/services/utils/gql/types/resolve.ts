@@ -14,51 +14,64 @@ import { Thunk } from '../../../types'
 import { interfaceTypeRegistry } from '../../../../domains/interfaceType/interfaceTypeRegistry'
 
 export function resolveType(
-  input: any,
+  someType: any,
   allowThunk = true,
   isArgument?: boolean
 ): GraphQLType {
-  if (isType(input)) {
-    return input
+  if (isType(someType)) {
+    return someType
   }
 
-  if (isParsableScalar(input)) {
-    return parseNativeTypeToGraphQL(input)
+  if (isParsableScalar(someType)) {
+    return parseNativeTypeToGraphQL(someType)
   }
 
-  if (Array.isArray(input)) {
-    return resolveListType(input, isArgument)
+  if (Array.isArray(someType)) {
+    return resolveListType(someType, isArgument)
   }
 
-  if (enumsRegistry.has(input)) {
-    return enumsRegistry.get(input)
+  if (enumsRegistry.has(someType)) {
+    return enumsRegistry.get(someType)
   }
 
-  if (unionRegistry.has(input)) {
-    return unionRegistry.get(input)()
+  if (unionRegistry.has(someType)) {
+    return unionRegistry.get(someType)()
   }
 
-  if (interfaceTypeRegistry.has(input)) {
-    return interfaceTypeRegistry.get(input)()
+  if (interfaceTypeRegistry.has(someType)) {
+    return interfaceTypeRegistry.get(someType)()
   }
 
-  if (isArgument && inputObjectTypeRegistry.has(input)) {
-    return compileInputObjectType(input)
+  if (isArgument && inputObjectTypeRegistry.has(someType)) {
+    return compileInputObjectType(someType)
   }
 
-  if (objectTypeRegistry.has(input)) {
-    return compileObjectType(input)
+  if (objectTypeRegistry.has(someType)) {
+    return compileObjectType(someType)
   }
 
-  if (input === Promise) {
+  if (someType === Promise) {
     return
   }
 
-  if (!allowThunk || typeof input !== 'function') {
+  if (!allowThunk || typeof someType !== 'function') {
     return
   }
+  let type
+  try {
+    type = someType()
+  } catch (err) {
+    if (err.message.match(/cannot be invoked without/)) {
+      // a common error where you forget to decorate the class used as a decapi type
+      throw new Error(
+        `Class ${someType} needs to be decorated with @ObjectType in order for it to be usable as a type of a decapi field`
+      )
+    } else {
+      throw err
+    }
+  }
 
-  return resolveType(input(), false)
+  return resolveType(type, false)
 }
 
 function resolveListType(input: any[], isArgument: boolean): GraphQLType {
