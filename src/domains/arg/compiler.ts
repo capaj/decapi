@@ -32,6 +32,7 @@ function compileInferedAndRegisterdArgs(
       return inferedType
     })
     .map((argType) => {
+      console.log('argType', argType)
       return resolveType(argType, true, true)
     })
 }
@@ -55,6 +56,7 @@ function validateArgs(ctx: ICompileArgContextType) {
         if (!isDecorated && onlyDecoratedArgs) {
           return
         }
+        console.log(argType, fieldName)
         throw new ArgError(
           ctx,
           argIndex,
@@ -156,6 +158,12 @@ export function compileFieldArgs(
     target.prototype,
     fieldName
   )
+  let inferedRawArgs2 = Reflect.getMetadata(
+    'design:returntype',
+    target.prototype,
+    fieldName
+  )
+  console.log('inferedRawArgs', fieldName, inferedRawArgs2)
 
   // There are no arguments
   if (!inferedRawArgs) {
@@ -179,9 +187,7 @@ export function compileFieldArgs(
       onlyDecoratedArgs
     ) as any) as GraphQLInputType[]
   } catch (err) {
-    err.message = `Field ${fieldName} on ${target} failed to compile arguments: ${
-      err.message
-    }`
+    err.message = `Field ${fieldName} on ${target} failed to compile arguments: ${err.message}`
     throw err
   }
 

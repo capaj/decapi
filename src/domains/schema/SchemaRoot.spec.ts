@@ -13,7 +13,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLFloat,
-  GraphQLInt
+  GraphQLInt,
+  printSchema
 } from 'graphql'
 
 describe('@SchemaRoot', () => {
@@ -292,5 +293,36 @@ describe('@SchemaRoot', () => {
     }).toThrowErrorMatchingInlineSnapshot(
       `"interface type Vehicle doesn't have any implementors"`
     )
+  })
+
+  it('should only include types', async () => {
+    @ObjectType()
+    class SampleObject {
+      @Field()
+      sampleField: string
+    }
+    @SchemaRoot()
+    class SampleSchemaRoot {
+      @Query()
+      sampleQuery(): SampleObject {
+        return { sampleField: 'sampleField' }
+      }
+    }
+    @ObjectType()
+    class OmittedObject {
+      @Field()
+      omittedField: string
+    }
+    @SchemaRoot()
+    //@ts-ignore
+    class OmittedResolver {
+      @Query()
+      omittedQuery(): OmittedObject {
+        return { omittedField: 'omittedField' }
+      }
+    }
+
+    const schema = compileSchema([SampleSchemaRoot])
+    console.log(printSchema(schema))
   })
 })

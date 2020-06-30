@@ -1,6 +1,7 @@
 import { GraphQLString, GraphQLFloat, GraphQLNonNull } from 'graphql'
 import { ObjectType, Field, compileObjectType } from '../..'
-import { GraphQLDateTime } from 'graphql-iso-date'
+
+import { GraphQLDateTime } from 'graphql-scalars'
 
 describe('Arguments', () => {
   it('Infers basic arguments without @Arg decorator', () => {

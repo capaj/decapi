@@ -49,6 +49,7 @@ export function inferTypeOrThrow(
   fieldName: string
 ): GraphQLType {
   const inferedType = inferTypeByTarget(target.prototype, fieldName)
+  console.log('inferedType', inferedType)
   if (!inferedType) {
     throw new FieldError(
       target,

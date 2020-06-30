@@ -15,6 +15,7 @@ export enum TestEnum {
   Baz = 'Baz'
 }
 
+
 registerEnum(TestEnum, { name: 'TestEnum' })
 
 @ObjectType()

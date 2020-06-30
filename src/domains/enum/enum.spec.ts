@@ -82,7 +82,7 @@ describe('Enums', () => {
     expect(resolveType(Foo)).toEqual(enumType)
   })
 
-  it('renders schema with an enum used in a query', async () => {
+  it.only('renders schema with an enum used in a query', async () => {
     enum IntEnum {
       one,
       two

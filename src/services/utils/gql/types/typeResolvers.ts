@@ -41,6 +41,8 @@ export function resolveType(
   }
 
   if (enumsRegistry.has(input)) {
+    console.log('input', input)
+
     return enumsRegistry.get(input)
   }
 
@@ -71,9 +73,7 @@ export function resolveType(
 
   if (isNativeClass(input)) {
     throw new Error(
-      `Class ${
-        input.name
-      } cannot be used as a resolve type because it is not an @ObjectType`
+      `Class ${input.name} cannot be used as a resolve type because it is not an @ObjectType`
     )
   }
   return resolveType(input(), false, isArgument)

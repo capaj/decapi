@@ -16,8 +16,8 @@ import {
   Query,
   compileSchema
 } from '../..'
-import { GraphQLDateTime } from 'graphql-iso-date'
 import { ArrayField } from './Field'
+import { GraphQLDateTime } from 'graphql-scalars'
 
 describe('Field', () => {
   it('Resolves fields with default value', async () => {
