@@ -1,4 +1,5 @@
 import { SchemaRoot, Query, compileSchema } from 'decapi'
+import { MySchemaCustomDecorators } from './schemaWithCustomDecorators'
 
 @SchemaRoot()
 class MySchema {
@@ -8,4 +9,4 @@ class MySchema {
   }
 }
 
-export const schema = compileSchema(MySchema)
+export const schema = compileSchema([MySchema, MySchemaCustomDecorators])
