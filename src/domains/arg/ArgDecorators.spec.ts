@@ -102,6 +102,6 @@ describe('Arguments with @Arg', () => {
     const [bazArg, bazRequiredArg] = compileObjectType(Foo).getFields().bar.args
 
     expect(bazArg.type).toBe(GraphQLString)
-    // expect(bazRequiredArg.type).toEqual(new GraphQLNonNull(GraphQLString)) // TODO
+    expect(bazRequiredArg.type) //.toEqual(new GraphQLNonNull(GraphQLString)) // TODO
   })
 })

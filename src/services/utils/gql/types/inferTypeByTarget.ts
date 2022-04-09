@@ -4,8 +4,7 @@ import {
   GraphQLString,
   GraphQLFloat,
   GraphQLBoolean,
-  GraphQLScalarType,
-  GraphQLNonNull
+  GraphQLScalarType
 } from 'graphql'
 import { GraphQLDateTime } from 'graphql-scalars'
 import {

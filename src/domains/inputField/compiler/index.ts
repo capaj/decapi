@@ -1,9 +1,7 @@
 import {
   isInputType,
-  GraphQLInputType,
   GraphQLInputFieldConfig,
-  GraphQLInputFieldConfigMap,
-  GraphQLNonNull
+  GraphQLInputFieldConfigMap
 } from 'graphql'
 
 import { InputFieldError, inputFieldsRegistry } from '../InputFieldDecorators'

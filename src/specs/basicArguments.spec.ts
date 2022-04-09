@@ -49,33 +49,32 @@ describe('arguments', () => {
   })
 })
 
-
 describe('onlyDecoratedArgs', function () {
-    it.only('should omit args when onlyDecoratedArgs is used', async () => {
-      class CustomClass {}
-  
-      @ObjectType()
-      class Test {
-        @Field({ onlyDecoratedArgs: true })
-        shouldHaveNone(a1?: Function, a2?: CustomClass): boolean {
-          return false
-        }
-  
-        @Field({ onlyDecoratedArgs: true })
-        shouldHaveOnlyOne(v1: boolean, @Arg() v2: boolean): boolean {
-          return v2
-        }
+  it('should omit args when onlyDecoratedArgs is used', async () => {
+    class CustomClass {}
+
+    @ObjectType()
+    class Test {
+      @Field({ onlyDecoratedArgs: true })
+      shouldHaveNone(a1?: Function, a2?: CustomClass): boolean {
+        return false
       }
-  
-      @SchemaRoot()
-      class FooSchema {
-        @Query()
-        test(): Test {
-          return new Test()
-        }
+
+      @Field({ onlyDecoratedArgs: true })
+      shouldHaveOnlyOne(v1: boolean, @Arg() v2: boolean): boolean {
+        return v2
       }
-  
-      const schema = compileSchema(FooSchema)
-      expect(printSchema(schema)).toMatchSnapshot()
+    }
+
+    @SchemaRoot()
+    class FooSchema {
+      @Query()
+      test(): Test {
+        return new Test()
+      }
+    }
+
+    const schema = compileSchema(FooSchema)
+    expect(printSchema(schema)).toMatchSnapshot()
   })
-  
+})

@@ -262,7 +262,7 @@ describe('Field', () => {
     class Foo2 {
       @Field()
       noTypeMethodReturningNumberOrString(): string {
-        let num = 1
+        // let num = 1
         // if (Math.random() > 0.5) {
         //   return num
         // }

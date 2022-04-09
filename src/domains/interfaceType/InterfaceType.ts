@@ -56,6 +56,7 @@ function getFieldsGetter(target: Function, config?: ITypeOptions) {
         targetWithParents = targetWithParents.concat(mixins)
       }
     }
+    // @ts-expect-error
     return compileAllFields(targetWithParents)
   })
 }

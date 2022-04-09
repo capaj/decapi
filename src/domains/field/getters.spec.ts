@@ -11,6 +11,7 @@ describe('Fields based on getters', () => {
           return 42
         }
       }
+      expect(Foo)
     } catch (err) {
       expect(err.toString()).toEqual('Error: Field cannot be on a getter')
     }
