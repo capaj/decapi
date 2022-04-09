@@ -23,7 +23,7 @@ import { IInjectorResolverData } from '../../../domains/inject/registry'
 import { AfterHookExecutor } from '../../../domains/hooks/registry'
 import isPromiseLike from '../../../isPromiseLike'
 import { Constructor, reflect } from 'typescript-rtti'
-import { interfaceTypeRegistry } from '../../../../src/domains/interfaceType/interfaceTypeRegistry'
+import { interfaceTypeRegistry } from '../../../domains/interfaceType/interfaceTypeRegistry'
 
 interface IArgsMap {
   [argName: string]: any
