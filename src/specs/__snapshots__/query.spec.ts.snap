@@ -1,7 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Query should compile 1`] = `
+"type Query {
+  hello: Hello
+  foo: String!
+}
+
+type Hello {
+  world(name: String!): String!
+  categories: [String!]!
+}"
+`;
+
 exports[`Query should not allow wrong argument types 1`] = `
 Array [
   [GraphQLError: String cannot represent a non string value: 2],
 ]
+`;
+
+exports[`Query should support queries with simple arguments 1`] = `
+Object {
+  "data": Object {
+    "hello": Object {
+      "categories": Array [
+        "Tables",
+        "Furniture",
+      ],
+      "world": "Hello, Bob",
+    },
+  },
+}
 `;

@@ -16,12 +16,11 @@ decapi is a set of decorators for creating GraphQL APIs in typescript. Write you
 ### Examples:
 
 - [Basic Express example](examples/basic-express-server)
+  - also showcases [Custom decorators / Higher order decorators](examples/basic-express-server/schemaWithCustomDecorators.ts)
 - [Typeorm integration example](examples/typeorm-basic-integration)
 - [Forward resolution - eg. query only needed db fields](examples/forward-resolution)
 - [Nested mutations or queries](examples/nested-mutation-or-query)
-- [Custom decorators / Higher order decorators](examples/custom-decorators)
 - [Serverless eg. AWS Lambda](examples/serverless)
-- [Merge schemas](examples/merge-schemas)
 
 ## Basic example
 
@@ -125,18 +124,17 @@ class SuperSchema {
 const compiledSchema = compileSchema(SuperSchema)
 ```
 
-## Setting the type explicitly
+## Type inference from typescript
 
-In previous examples, `decapi` was able to determine the type of every field from typescript type definitions.
+These cases are supported by decapi 2/typescript-rtti:
 
-There are, however cases where we have to define them explicitly.
+- Unions - for example we want to specify whether field is nullable or not
+- Function returns type of `Promise<SomeType>`
+- List (Array) type is used
 
-- We want to specify whether field is nullable or not
-- We want to be explicit about if some `number` type is `Float` or `Int` (`GraphQLFloat` or `GraphQLInt`) etc
-- Function we use returns type of `Promise<SomeType>` while field itself is typed as `SomeType`
-- List (Array) type is used. (For now, typescript `Reflect` api is not able to guess type of single array item)
+All other code-first libraries on decorators like typegraphql or typegql require you to write types for these twice. Decapi infers is from typescript without any extra effort on your end.
 
-For major version 1.0.0 we will use https://github.com/rezonant/typescript-rtti so it will be able to determine all types directly from the TS type. This is WIP ATM.
+Even in decapi 2 onward you still can write an explicit type. There are situations when typescript types are not precise enough- for example you want to be explicit about if some `number` type is `Float` or `Int` (`GraphQLFloat` or `GraphQLInt`).
 
 Let's modify our `Product` so it has additional `categories` field that will return array of strings. For the sake of readability, let's ommit all fields we've defined previously.
 
@@ -193,6 +191,7 @@ Initially I wanted to contribute to [typegql](https://github.com/prismake/typegq
 
 ## Upgrading from 1.0.0 to 2.0.0
 
+Firstly, you must install all the new peer dependencies.
 This major was a complete rewrite of the reflection of types. From 2.0.0 decapi uses typescript-rtti to infer graphql types from typescript. This works for 99% of TS types.
 This means you should always have your decorators without explicit `type` property.
 

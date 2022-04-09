@@ -135,8 +135,9 @@ export const inferTypeFromRtti = (rtti: ReflectedTypeRef): IInferResult => {
         return inferUnion(unionTypes)
       }
     } else {
-      inferred = rtti.as('generic').typeParameters[0].as('class').class
-      return { runtimeType: inferred, isNullable: false } // TODO we would like to return nullable when we can detect that this type is implicit, depends on: https://github.com/rezonant/typescript-rtti/issues/16
+      const firstTypeParameter = rtti.as('generic').typeParameters[0]
+
+      return inferTypeFromRtti(firstTypeParameter)
     }
   } else if (rtti.isArray()) {
     const elementType = rtti.as('array').elementType
