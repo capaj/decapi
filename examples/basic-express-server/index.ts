@@ -1,17 +1,29 @@
+import { ApolloServer } from 'apollo-server-express'
+import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import express from 'express'
-import graphqlHTTP from 'express-graphql'
-
+import http from 'http'
 import { schema } from './schema'
 
-const app = express()
+async function startApolloServer() {
+  const app = express()
+  const httpServer = http.createServer(app)
 
-app.use(
-  '/graphql',
-  graphqlHTTP({
+  const server = new ApolloServer({
     schema,
-    graphiql: true
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
   })
-)
-app.listen(3000, () => {
-  console.log('Api ready on port 3000')
-})
+
+  await server.start()
+  server.applyMiddleware({
+    app,
+
+    path: '/'
+  })
+
+  // Modified server startup
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: 4000 }, resolve)
+  )
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+}
+startApolloServer()

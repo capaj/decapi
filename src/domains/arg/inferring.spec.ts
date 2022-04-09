@@ -38,7 +38,7 @@ describe('Arguments', () => {
     expect(() =>
       compileObjectType(Foo).getFields()
     ).toThrowErrorMatchingInlineSnapshot(
-      `"@Type Foo.bar(baz <-------): Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar or a class decorated with @InputObjectType"`
+      `"Argument Foo.bar[0]: Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar or a class decorated with @InputObjectType"`
     )
   })
 

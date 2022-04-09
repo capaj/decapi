@@ -1,4 +1,4 @@
-import { SchemaRoot, Query, compileSchema } from 'decapi'
+import { SchemaRoot, Query, compileSchema } from '../../src/index'
 
 @SchemaRoot()
 class MySchema {

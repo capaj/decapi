@@ -20,7 +20,7 @@ import {
 } from '../../services/utils/gql/types/inferTypeByTarget'
 import { resolveType } from '../../services/utils/gql/types/typeResolvers'
 import { inputObjectTypeRegistry } from '../inputObjectType/registry'
-import { ArgError } from './error'
+// import { ArgError } from './error'
 
 export interface ITargetAndField {
   target: Constructor<Function>
@@ -134,13 +134,13 @@ export function compileFieldArgs(
     } else {
       const { runtimeType, isNullable } = inferTypeFromRtti(rtti)
       if (runtimeType === undefined) {
-        throw new ArgError(
-          'Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar or a class decorated with @InputObjectType',
-          {
-            target,
-            fieldName
-          },
-          index
+        throw new Error(
+          `Argument ${target.name}.${fieldName}[${index}]: Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar or a class decorated with @InputObjectType`
+          // {
+          //   target,
+          //   fieldName
+          // },
+          // index
         )
       }
 

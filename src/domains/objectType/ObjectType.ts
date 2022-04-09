@@ -28,6 +28,7 @@ export function ObjectType(options?: IObjectTypeOptions): ClassDecorator {
     }
 
     const config = { name: target.name, ...options }
+    // @ts-expect-error
     const outputTypeCompiler = () => compileObjectTypeWithConfig(target, config)
 
     objectTypeRegistry.set(target, outputTypeCompiler)

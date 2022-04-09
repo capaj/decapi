@@ -2,7 +2,7 @@ import { reflect } from 'typescript-rtti'
 import { BaseError } from '../../services/error'
 
 import { ITargetAndField } from './compiler'
-
+// TODO use again when typescript rtti is fixed
 export class ArgError extends BaseError {
   constructor(msg: string, ctx: ITargetAndField, argIndex: number) {
     const { target, fieldName } = ctx
