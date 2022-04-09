@@ -8,7 +8,7 @@ order: 2
 Firstly, add `decapi` and it's peer dependecies to your project
 
 ```
-yarn add decapi graphql reflect-metadata
+yarn add decapi graphql reflect-metadata ttypescript
 ```
 
 **Important!** To work with `typescript`, you'll need `reflect-metadata` so `decapi` can infer types from your code.
@@ -19,14 +19,41 @@ Add `import "reflect-metadata";` somewhere in bootstrap (before any `decapi` dec
 
 `decapi` will try to infer types of your fields, when possible. To allow this, you'll have to add following to your `tsconfig.json` `compilerOptions` section:
 
-```
-"emitDecoratorMetadata": true,
-"experimentalDecorators": true,
+```json
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "plugins": [{ "transform": "typescript-rtti/dist/transformer" }]
 ```
 
 Also you need to target `es6` or newer target in your `compilerOptions`.
 **Important!** `es5` target will not work correctly. ObjectTypes type inference only currently works for es6 or newr targets.
 
+## Running with ttypescript
+
+In order to run the rtti transformer, you need to compile using `ttypescript`.
+When you develop, you can use `ts-node` programmatically:
+
+```js
+require('ts-node').register({
+  compiler: 'ttypescript',
+  transpileOnly: true
+})
+
+require('./server')
+```
+
+or you can invoke it like this:
+
+```
+ts-node -C ttypescript server.ts
+```
+
+For production, it's best to compile using `ttsc` instead of `tsc`.
+There's also good reference on `ttypescript` here: https://github.com/cevek/ttypescript/blob/master/README.md
+
 ## Does `decapi` work without typescript?
 
-It absolutely does. Keep in mind, however - without typescript all types will have to be defined explicitly.
+No we rely on typescript for type inference.
