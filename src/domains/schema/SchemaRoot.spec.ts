@@ -186,7 +186,7 @@ describe('@SchemaRoot', () => {
     }
 
     expect(() => compileSchema([FooSchema])).toThrowErrorMatchingInlineSnapshot(
-      `"Type has kind any, expected class"`
+      `"@ObjectType Hello.world: Could not infer return type and no type is explicitly configured. In case of circular dependencies make sure to explicitly set a type."`
     )
   })
 

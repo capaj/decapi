@@ -185,7 +185,7 @@ Initially I wanted to contribute to [typegql](https://github.com/prismake/typegq
 - decapi has `@DuplexObjectType` and `@DuplexField`
 - decapi supports interfaces and mixins
 - decapi can infer Date type
-- decapi has `castTo` Field config
+- decapi casts plain objects by default, which means it is much easier to use without ORMs. Even prisma needs this casting, because all the objects returned are POJO objects.
 - InputObjectType argument passed to Field/Query method is not just a plain object, but an instance of it's class.
 - decapi allows you to have an empty object type-you can populate it with fields at runtime
 

@@ -1,20 +1,18 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
-  GraphQLOutputType
-} from 'graphql'
+import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql'
 import { FieldError, fieldsRegistry } from '../Field'
 
 import { compileFieldResolver } from './resolver'
-import {
-  isRootFieldOnNonRootBase,
-  resolveRegisteredOrInferredType,
-  validateResolvedType
-} from './services'
+import { isRootFieldOnNonRootBase, validateResolvedType } from './services'
 
-import { validateNotInferableField } from './fieldType'
+import {
+  resolveTypeOrThrow,
+  throwIfNotInferableType,
+  validateNotInferableField
+} from './fieldType'
 import { compileFieldArgs } from '../../arg/ArgDecorators'
 import { Constructor } from 'typescript-rtti'
+import { resolveType } from '../../../services/utils/gql/types/typeResolvers'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget'
 
 export function compileFieldConfig(
   target: Constructor<Function>,
@@ -32,24 +30,42 @@ export function compileFieldConfig(
 
   const args = compileFieldArgs(target as any, fieldName, !!onlyDecoratedArgs)
 
-  const resolvedType = resolveRegisteredOrInferredType(target, fieldName, {
-    runtimeType: type,
-    isNullable
-  }) as GraphQLOutputType
+  const inferredType = inferTypeByTarget(target.prototype, fieldName)
+
+  throwIfNotInferableType(inferredType, target, fieldName)
+
+  let gqlType
+  if (type) {
+    gqlType = resolveTypeOrThrow(
+      { runtimeType: type, isNullable },
+      target,
+      fieldName
+    )
+  } else {
+    if (!inferredType.runtimeType) {
+      throw new FieldError(
+        target,
+        fieldName,
+        `Could not infer return type and no type is explicitly configured. In case of circular dependencies make sure to explicitly set a type.`
+      )
+    }
+    gqlType = resolveType(inferredType)
+  }
 
   // if was not able to resolve type, try to show some helpful information about it
-  if (!resolvedType && !validateNotInferableField(target, fieldName)) {
+  if (!gqlType && !validateNotInferableField(target, fieldName)) {
     throw new Error('could not resolve type')
   }
 
   // show error about being not able to resolve field type
-  if (!validateResolvedType(target, fieldName, resolvedType)) {
+  if (!validateResolvedType(target, fieldName, gqlType)) {
     validateNotInferableField(target, fieldName)
   }
 
   return {
     description,
-    type: resolvedType,
+    // @ts-expect-error
+    type: gqlType,
     deprecationReason,
     resolve: compileFieldResolver(target, fieldName, type),
     // @ts-expect-error

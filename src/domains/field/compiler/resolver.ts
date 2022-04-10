@@ -221,7 +221,7 @@ export function compileFieldResolver(
 
     let resolvedValue
     if (typeof instanceField !== 'function') {
-      resolvedValue = castIfNeeded(instanceField)
+      resolvedValue = castIfNeeded(instanceField) // TODO double check if we need to do this. Previously this was needed for methods too
       if (afterHooks) {
         await performAfterHooksExecution(
           afterHooks,
@@ -249,7 +249,6 @@ export function compileFieldResolver(
     resolvedValue = isPromiseLike(promiseOrValue)
       ? await promiseOrValue
       : promiseOrValue
-    resolvedValue = castIfNeeded(resolvedValue)
 
     if (afterHooks) {
       await performAfterHooksExecution(afterHooks, injectorData, resolvedValue)

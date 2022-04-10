@@ -27,11 +27,14 @@ export interface IUnionOptions {
 
 const compileUnionCache = new WeakMap<Function, GraphQLUnionType>()
 
-function getDefaultResolver(types: GraphQLObjectType[]): UnionTypeResolver {
+function getDefaultResolver(
+  runtimeTypes: any[],
+  resolvedTypes: GraphQLObjectType[]
+): UnionTypeResolver {
   return (value: any, context: any, info: any) => {
-    for (const type of types) {
-      if (type.isTypeOf && type.isTypeOf(value, context, info)) {
-        return type
+    for (const runtimeType of runtimeTypes) {
+      if (value instanceof runtimeType) {
+        return runtimeType.name
       }
     }
   }
@@ -79,7 +82,7 @@ export function compileUnionType(target: Function, config: IUnionOptions) {
 
   const typeResolver = resolveTypes
     ? enhanceTypeResolver(resolveTypes)
-    : getDefaultResolver(resolvedTypes)
+    : getDefaultResolver(types as any, resolvedTypes)
 
   const compiled = new GraphQLUnionType({
     name: name ?? target.name,

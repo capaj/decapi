@@ -70,7 +70,9 @@ export function resolveType({
     return compileInputObjectType(type)
   }
 
-  if (objectTypeRegistry.has(type)) {
+  const objectGetter = objectTypeRegistry.get(type)
+  if (objectGetter) {
+
     return compileObjectType(type)
   }
 

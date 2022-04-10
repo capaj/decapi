@@ -83,7 +83,7 @@ export function compileObjectTypeWithConfig(
       : null,
     name: config.name ?? target.name,
     description: config.description,
-    isTypeOf: (value: any) => value instanceof target,
+    // isTypeOf: (value: any) => value instanceof target, // TODO double check that we don't need this
     fields: createTypeFieldsGetter(target, config)
   })
 

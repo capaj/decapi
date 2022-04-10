@@ -240,7 +240,7 @@ describe('Field', () => {
     })
   })
 
-  it('throws an error when explicit castTo is "undefined"', () => {
+  it('throws an error when explicit type is "undefined"', () => {
     try {
       @ObjectType()
       class Foo {
@@ -483,14 +483,21 @@ describe('Field', () => {
       expect(printSchema(schema)).toMatchSnapshot()
     })
 
-    it('should cast', async () => {
+    it('should cast POJO by default', async () => {
+      @ObjectType()
+      class FooChild {
+        @Field()
+        bazChild: string = 'bazChildResult'
+      }
+
       @ObjectType()
       class Foo {
-        baz = 'baz'
+        @Field()
+        baz: string = 'baz'
 
         @Field()
-        bar(): string {
-          return this.baz
+        bar() {
+          return { bazChild: 'field bazChild test value' } as FooChild
         }
       }
 
@@ -508,7 +515,9 @@ describe('Field', () => {
         source: `
           {
             castedQuery {
-              bar
+              bar {
+                bazChild
+              }
             
             }
           }
@@ -516,6 +525,7 @@ describe('Field', () => {
       })
 
       expect(result.errors).toBeUndefined()
+      expect(result.data).toMatchSnapshot()
     })
 
     it('should register a field with castTo', async () => {
@@ -590,7 +600,7 @@ describe('Field', () => {
             "castedQuery": null,
           },
           "errors": Array [
-            [GraphQLError: field "castedFieldAsArrayWithBadReturnValue" cannot be casted to object type Foo - returned value is an array],
+            [GraphQLError: Cannot return null for non-nullable field Foo.bar.],
           ],
         }
       `)

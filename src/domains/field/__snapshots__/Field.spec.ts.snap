@@ -14,6 +14,16 @@ Object {
 }
 `;
 
+exports[`Field IFieldOptions should cast POJO by default 1`] = `
+Object {
+  "castedQuery": Object {
+    "bar": Object {
+      "bazChild": "field bazChild test value",
+    },
+  },
+}
+`;
+
 exports[`Field IFieldOptions should print as expected 1`] = `
 "type Query {
   castedQuery: Foo
