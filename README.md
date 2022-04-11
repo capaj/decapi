@@ -132,7 +132,7 @@ These cases are supported by decapi 2/typescript-rtti:
 - Function returns type of `Promise<SomeType>`
 - List (Array) type is used
 
-All other code-first libraries on decorators like typegraphql or typegql require you to write types for these twice. Decapi infers is from typescript without any extra effort on your end.
+All other code-first libraries on decorators like typegraphql or typegql require you to write types for these twice. Decapi infers types from typescript without any extra effort on your end.
 
 Even in decapi 2 onward you still can write an explicit type. There are situations when typescript types are not precise enough- for example you want to be explicit about if some `number` type is `Float` or `Int` (`GraphQLFloat` or `GraphQLInt`).
 
