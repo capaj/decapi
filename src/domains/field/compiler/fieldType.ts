@@ -35,7 +35,7 @@ export function throwIfNotInferableType(
 
     if (
       stringSignature.match(
-        // previously we've been comparing tho these functions directly, but this would fail in environments where for example Promise was monkeypatched
+        // previously we've been comparing tho these functions directly, but this would fail in environments where for example Promise was monkey patched
         /function (Object|Array|Promise)\(\) { \[native code\] }/
       )
     ) {
