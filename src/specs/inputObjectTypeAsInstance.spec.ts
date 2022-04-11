@@ -72,7 +72,7 @@ describe('input object type arguments are passed as instances', () => {
         }
       `
     })
-    console.error(result1.errors)
+
     expect(result1).toMatchInlineSnapshot(`
 Object {
   "data": Object {

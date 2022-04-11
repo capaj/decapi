@@ -67,7 +67,7 @@ describe('Mutation', () => {
         }
       `
     })
-    console.error(result.errors)
+
     expect(result).toEqual({ data: { deepInput: { world: 'Hola, Bob' } } })
   })
 })
