@@ -1,4 +1,4 @@
-## Basic express example
+## Basic apollo-server example
 
 Example of basic graphql api able to resolve such query
 
@@ -11,9 +11,8 @@ query {
 Here is all the server code required:
 
 ```ts
-import express from 'express'
 import { SchemaRoot, Query, compileSchema } from 'decapi'
-import graphqlHTTP from 'express-graphql'
+import ApolloServer from 'apollo-server'
 
 @SchemaRoot()
 class SuperSchema {
@@ -25,16 +24,11 @@ class SuperSchema {
 
 const compiledSchema = compileSchema(SuperSchema)
 
-const app = express()
+const server = new ApolloServer({ schema, graphiql: true })
 
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: compiledSchema,
-    graphiql: true
-  })
+server.listen(3000, () =>
+  console.log('Graphql API ready on http://localhost:3000/graphql')
 )
-app.listen(3000)
 ```
 
 To start this example, in this folder run `yarn install` and `yarn start`. Server will be running under `http://localhost:3000/graphql`

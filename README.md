@@ -48,22 +48,14 @@ const compiledSchema = compileSchema(SuperSchema)
 
 `compiledSchema` is a regular GQL executable schema compatible with `graphql-js` library.
 
-To use it with `express`, you'd have to simply:
+To use it with `apollo-server`, you'd have to use like this:
 
 ```ts
-import express from 'express'
-import graphqlHTTP from 'express-graphql'
+import ApolloServer from 'apollo-server'
 
-const app = express()
+const server = new ApolloServer({ schema, graphiql: true })
 
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: compiledSchema,
-    graphiql: true
-  })
-)
-app.listen(3000, () =>
+server.listen(3000, () =>
   console.log('Graphql API ready on http://localhost:3000/graphql')
 )
 ```

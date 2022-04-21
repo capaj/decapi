@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es2017"],
-    "target": "esnext",
+    "lib": ["ES2017"],
+    "target": "ES2018",
+    "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "plugins": [{ "transform": "typescript-rtti/dist/transformer" }]
   }
 }

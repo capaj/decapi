@@ -8,7 +8,7 @@ import {
 } from 'decapi'
 
 @ObjectType()
-class Book {
+class BookQuery {
   @Field()
   id: number
   @Field()
@@ -18,9 +18,12 @@ class Book {
     this.id = id
     this.name = name
   }
+}
 
+@ObjectType()
+class BookMutation extends BookQuery {
   @Field()
-  edit(name: string): Book {
+  edit(name: string): BookQuery {
     this.name = name
     return this
   }
@@ -31,20 +34,20 @@ class Book {
   }
 }
 
-const booksDb: Book[] = [
-  new Book({ id: 1, name: 'Lord of the Rings' }),
-  new Book({ id: 2, name: 'Harry Potter' })
+const booksDb: BookMutation[] = [
+  new BookMutation({ id: 1, name: 'Lord of the Rings' }),
+  new BookMutation({ id: 2, name: 'Harry Potter' })
 ]
 
 @SchemaRoot()
 class MySchema {
-  @Mutation({ type: Book })
-  book(bookId: number): Book {
+  @Mutation()
+  book(bookId: number): BookMutation | undefined {
     return booksDb.find(({ id }) => id === bookId)
   }
 
-  @Query({ type: [Book] })
-  books(): Book[] {
+  @Query({ type: [BookQuery] })
+  books(): BookQuery[] {
     // just a utility to cast our POJOs into a class of Book
     return booksDb
   }
