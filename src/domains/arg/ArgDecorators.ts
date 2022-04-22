@@ -12,8 +12,8 @@ export function Arg(options: IArgOptions = {}): ParameterDecorator {
 }
 
 /**
- * a shorthand for @Arg({isNullable: true})
+ * a shorthand for @Arg({nullable: true})
  */
 export function ArgNullable(options: IArgOptions = {}): ParameterDecorator {
-  return Arg({ ...options, isNullable: true })
+  return Arg({ ...options, nullable: true })
 }

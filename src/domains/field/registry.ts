@@ -16,7 +16,7 @@ export interface IFieldInnerConfig {
   rootFieldType?: rootFieldTypes
   property: string
   description?: string
-  isNullable?: boolean
+  nullable?: boolean
   type?: any
   onlyDecoratedArgs?: boolean
   deprecationReason?: string

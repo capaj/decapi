@@ -52,7 +52,7 @@ class FooSchema {
 
   @Query()
   withScalar(
-    @Arg({ type: GraphQLDateTime, isNullable: true }) aDate: Date
+    @Arg({ type: GraphQLDateTime, nullable: true }) aDate: Date
   ): number {
     return aDate.getTime()
   }

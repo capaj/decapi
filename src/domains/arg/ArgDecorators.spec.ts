@@ -71,13 +71,13 @@ describe('Arguments with @Arg', () => {
     expect(resolvedValue).toEqual('instance.param')
   })
 
-  // it('Respects isNullable @Arg option', () => {
+  // it('Respects nullable @Arg option', () => {
   //   @ObjectType()
   //   class Foo {
   //     @Field()
   //     bar(
-  //       @Arg({ isNullable: true }) baz: string,
-  //       @Arg({ isNullable: false }) bazRequired: string
+  //       @Arg({ nullable: true }) baz: string,
+  //       @Arg({ nullable: false }) bazRequired: string
   //     ): string {
   //       return baz
   //     }
@@ -96,8 +96,8 @@ describe('Arguments with @Arg', () => {
       }
     }
 
-    Arg({ type: String, isNullable: true })(Foo.prototype, 'bar', 0)
-    Arg({ type: String, isNullable: false })(Foo.prototype, 'bazRequired', 1)
+    Arg({ type: String, nullable: true })(Foo.prototype, 'bar', 0)
+    Arg({ type: String, nullable: false })(Foo.prototype, 'bazRequired', 1)
 
     const [bazArg, bazRequiredArg] = compileObjectType(Foo).getFields().bar.args
 

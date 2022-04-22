@@ -127,7 +127,7 @@ export function compileFieldArgs(
         runtimeType: registeredArgConfig.type,
         allowThunk: true,
         isArgument: true,
-        isNullable: registeredArgConfig.isNullable || isNullable
+        isNullable: registeredArgConfig.nullable || isNullable
       })
     } else if (onlyDecoratedArgs && !registeredArgConfig) {
       argumentTypes[index] = null

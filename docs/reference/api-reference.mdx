@@ -25,7 +25,7 @@ interface IFieldOptions {
   onlyDecoratedArgs?: boolean // when true this will not expose arguments that aren't decorated by @Arg()
   // useful when you have optional arguments that you only want to use on the backend
   name?: string
-  isNullable?: boolean
+  nullable?: boolean
 }
 
 @Field(options?: FieldOptions)
@@ -50,7 +50,7 @@ interface InputObjectTypeOptions {
   defaultValue?: any;
   type?: any | () => any;
   name?: string;
-  isNullable?: boolean;
+  nullable?: boolean;
 }
 
 @InputField(options?: InputFieldOptions)
@@ -92,7 +92,7 @@ Just a shorthand-it is the same as putting both `@InputField` and `@Field`
   defaultValue?: any;
   type?: any | () => any;
   name?: string;
-  isNullable?: boolean;
+  nullable?: boolean;
   inputNullable?: boolean;
 }
 
@@ -105,7 +105,7 @@ Just a shorthand-it is the same as putting both `@InputField` and `@Field`
  interface ArgOptions {
   description?: string;
   type?: any;
-  isNullable?: boolean;
+  nullable?: boolean;
 }
 @Arg(options?: ArgOptions)
 ```

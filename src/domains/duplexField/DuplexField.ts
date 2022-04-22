@@ -17,13 +17,13 @@ export function DuplexField(options?: IDuplexFieldOptions): PropertyDecorator {
     let isNullable = true
     let inputNullable = true
     if (options) {
-      if (options.isNullable !== undefined) {
-        isNullable = options.isNullable
+      if (options.nullable !== undefined) {
+        isNullable = options.nullable
       }
       if (options.inputNullable !== undefined) {
         inputNullable = options.inputNullable
       }
-      delete options.isNullable
+      delete options.nullable
       delete options.inputNullable
     }
 

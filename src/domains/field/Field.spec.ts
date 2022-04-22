@@ -113,10 +113,10 @@ describe('Field', () => {
       nonNullable: number
       @Field({ type: GraphQLInt })
       nullable: number | null
-      @Field({ type: GraphQLInt, isNullable: false }) // the explicit nullability in the config should override the TS nullability
+      @Field({ type: GraphQLInt, nullable: false }) // the explicit nullability in the config should override the TS nullability
       nonNullableSecond: number | null
 
-      @Field({ type: GraphQLInt, isNullable: true }) // the explicit nullability in the config should override the TS nullability
+      @Field({ type: GraphQLInt, nullable: true }) // the explicit nullability in the config should override the TS nullability
       nullableSecond: number
     }
 
@@ -211,7 +211,7 @@ describe('Field', () => {
       class Foo {
         @Field({ type: () => String })
         barNonNull: any
-        @Field({ type: () => String, isNullable: true })
+        @Field({ type: () => String, nullable: true })
         bar: any
         @Field({ type: () => Number })
         baz: any
@@ -268,7 +268,7 @@ describe('Field', () => {
     try {
       @ObjectType()
       class Foo {
-        @Field({ type: undefined, isNullable: false })
+        @Field({ type: undefined, nullable: false })
         bar: string
       }
 

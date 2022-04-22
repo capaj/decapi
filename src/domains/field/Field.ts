@@ -2,7 +2,7 @@ import { fieldsRegistry, IFieldInnerConfig } from './registry'
 import { rootFieldTypes } from '../schema/rootFields'
 
 export {
-  IFieldInnerConfig as FieldInnerConfig,
+  IFieldInnerConfig,
   fieldsRegistry,
   queryFieldsRegistry
 } from './registry'
@@ -18,7 +18,7 @@ export interface IFieldOptionsBase {
 }
 
 export interface IFieldOptions extends IFieldOptionsBase {
-  isNullable?: boolean
+  nullable?: boolean
   itemNullable?: boolean
   type?: any
   deprecationReason?: string

@@ -23,7 +23,7 @@ export function compileFieldConfig(
   const {
     description,
     type,
-    isNullable,
+    nullable: isNullable,
     onlyDecoratedArgs,
     deprecationReason
   } = fieldRegistryConfig

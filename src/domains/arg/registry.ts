@@ -2,7 +2,7 @@ import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
 
 export interface IArgInnerConfig {
   description?: string
-  isNullable?: boolean
+  nullable?: boolean
   type?: any
   inferredType?: any
   name?: string
