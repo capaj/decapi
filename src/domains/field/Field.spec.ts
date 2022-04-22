@@ -6,7 +6,8 @@ import {
   getNamedType,
   graphql,
   printSchema,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLInt
 } from 'graphql'
 
 import 'reflect-metadata'
@@ -105,15 +106,38 @@ describe('Field', () => {
     expect(coo.type).toEqual(new GraphQLNonNull(GraphQLBoolean))
   })
 
+  it('uses nullability inferred from TS', () => {
+    @ObjectType()
+    class Foo {
+      @Field({ type: GraphQLInt })
+      nonNullable: number
+      @Field({ type: GraphQLInt })
+      nullable: number | null
+      @Field({ type: GraphQLInt, isNullable: false }) // the explicit nullability in the config should override the TS nullability
+      nonNullableSecond: number | null
+
+      @Field({ type: GraphQLInt, isNullable: true }) // the explicit nullability in the config should override the TS nullability
+      nullableSecond: number
+    }
+
+    const { nonNullable, nullable, nonNullableSecond, nullableSecond } =
+      compileObjectType(Foo).getFields()
+
+    expect(nonNullable.type).toEqual(new GraphQLNonNull(GraphQLInt))
+    expect(nullable.type).toEqual(GraphQLInt)
+    expect(nonNullableSecond.type).toEqual(new GraphQLNonNull(GraphQLInt))
+    expect(nullableSecond.type).toEqual(GraphQLInt)
+  })
+
   it('Properly sets explicit field type', () => {
     @ObjectType()
     class Foo {
-      @Field({ type: () => GraphQLFloat })
+      @Field({ type: () => GraphQLDateTime })
       bar: string
     }
 
     const { bar } = compileObjectType(Foo).getFields()
-    expect(bar.type).toEqual(GraphQLFloat)
+    expect(bar.type).toEqual(new GraphQLNonNull(GraphQLDateTime))
   })
 
   it('Supports references to other types', () => {

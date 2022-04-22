@@ -6,7 +6,7 @@
     "target": "ES2018",
     "noImplicitAny": true,
     "noImplicitUseStrict": true,
-    "types": ["reflect-metadata", "jest"],
+    "types": ["reflect-metadata", "jest", "node"],
     "pretty": true,
     "baseUrl": ".",
     "rootDir": "./src",

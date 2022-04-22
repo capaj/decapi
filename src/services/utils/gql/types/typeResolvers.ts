@@ -37,7 +37,7 @@ export function resolveType({
   isArgument = false
 }: IResolveTypeParams): GraphQLType {
   if (isType(type)) {
-    return type
+    return isNullable ? type : new GraphQLNonNull(type)
   }
 
   if (isParsableScalar(type)) {
@@ -72,7 +72,6 @@ export function resolveType({
 
   const objectGetter = objectTypeRegistry.get(type)
   if (objectGetter) {
-
     return compileObjectType(type)
   }
 

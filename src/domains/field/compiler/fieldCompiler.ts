@@ -36,8 +36,10 @@ export function compileFieldConfig(
 
   let gqlType
   if (type) {
+    // console.log(fieldName, '~ isNullable', isNullable)
+
     gqlType = resolveTypeOrThrow(
-      { runtimeType: type, isNullable },
+      { runtimeType: type, isNullable: isNullable ?? inferredType.isNullable },
       target,
       fieldName
     )

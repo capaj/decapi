@@ -43,7 +43,7 @@ describe('InterfaceType', () => {
     windows: number
     seats: number
 
-    @Field()
+    @Field({ type: GraphQLInt })
     propellers: number | null
   }
 
@@ -52,7 +52,7 @@ describe('InterfaceType', () => {
     @Field({ type: GraphQLInt })
     id: number
 
-    @Field()
+    @Field({ type: GraphQLInt })
     hulls: number
   }
 
@@ -105,6 +105,8 @@ describe('InterfaceType', () => {
       const katamaran = new Katamaran()
       katamaran.propellers = 2
       katamaran.hulls = 2
+      katamaran.seats = 5
+      katamaran.windows = 10
 
       return [car, boat, katamaran]
     }
@@ -132,35 +134,35 @@ describe('InterfaceType', () => {
     expect(printSchema(schema)).toMatchInlineSnapshot(`
       "\\"\\"\\"a vehicle interface for a basic spec\\"\\"\\"
       interface IVehicle {
-        windows: Int
-        seats: Int
+        windows: Int!
+        seats: Int!
       }
 
       \\"\\"\\"a vehicle interface for a basic spec\\"\\"\\"
       interface IEntity {
-        id: Int
+        id: Int!
       }
 
       type Car implements IVehicle & IEntity {
-        id: Int
+        id: Int!
         wheels: Float!
-        windows: Int
-        seats: Int
+        windows: Int!
+        seats: Int!
       }
 
       type Boat implements IVehicle & IEntity {
-        id: Int
-        propellers: Float
-        windows: Int
-        seats: Int
+        id: Int!
+        propellers: Int
+        windows: Int!
+        seats: Int!
       }
 
       type Katamaran implements IVehicle & IEntity {
-        id: Int
-        propellers: Float
-        hulls: Float!
-        windows: Int
-        seats: Int
+        id: Int!
+        propellers: Int
+        hulls: Int!
+        windows: Int!
+        seats: Int!
       }
 
       type Query {
