@@ -1,9 +1,9 @@
-import { inputObjectTypeRegistry } from './registry'
-import { compileInputObjectTypeWithConfig } from './objectTypeCompiler'
+import { inputObjectTypeRegistry } from './registry.js'
+import { compileInputObjectTypeWithConfig } from './objectTypeCompiler.js'
 import { Constructor } from 'typescript-rtti'
 
-export { InputObjectTypeError } from './error'
-export { inputObjectTypeRegistry } from './registry'
+export { InputObjectTypeError } from './error.js'
+export { inputObjectTypeRegistry } from './registry.js'
 
 export interface IInputObjectTypeOptions {
   name?: string

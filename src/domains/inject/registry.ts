@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql'
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
 
 export interface IInjectorResolverData {
   source: any

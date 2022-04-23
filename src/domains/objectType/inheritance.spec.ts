@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLNonNull } from 'graphql'
 import { ObjectType, Field, compileObjectType } from '../..'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance/index'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 describe('Type inheritance', () => {
   it('Will pass fields from parent class', () => {

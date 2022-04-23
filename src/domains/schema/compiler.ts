@@ -3,15 +3,15 @@ import {
   queryFieldsRegistry,
   mutationFieldsRegistry,
   RootFieldsRegistry
-} from './registry'
-import { SchemaRootError } from './error'
+} from './registry.js'
+import { SchemaRootError } from './error.js'
 
-import { validateSchemaRoots } from './services'
+import { validateSchemaRoots } from './services.js'
 import {
   interfaceClassesSet,
   interfaceTypeImplementors
-} from '../interfaceType/interfaceTypeRegistry'
-import { objectTypeRegistry } from '../objectType/registry'
+} from '../interfaceType/interfaceTypeRegistry.js'
+import { objectTypeRegistry } from '../objectType/registry.js'
 
 function getAllRootFieldsFromRegistry(
   roots: Function[],

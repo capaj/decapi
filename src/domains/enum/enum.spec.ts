@@ -1,9 +1,9 @@
-import { resolveType } from '../../services/utils/gql/types/typeResolvers'
+import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
 import { registerEnum } from '../..'
-import { SchemaRoot, compileSchema } from '../schema/SchemaRoot'
-import { Query } from '../schema/rootFields'
+import { SchemaRoot, compileSchema } from '../schema/SchemaRoot.js'
+import { Query } from '../schema/rootFields.js'
 import { printSchema, graphql } from 'graphql'
-import { Arg } from '../arg/ArgDecorators'
+import { Arg } from '../arg/ArgDecorators.js'
 
 describe('Enums', () => {
   it('throws when the enum key cannot be used with GQL', () => {

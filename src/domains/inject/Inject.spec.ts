@@ -8,7 +8,7 @@ import {
   Source,
   Info
 } from '../..'
-import { wait } from '../../specs/waitUtil'
+import { wait } from '../../specs/waitUtil.js'
 
 describe('@Inject', () => {
   it('Properly injects any value', async () => {

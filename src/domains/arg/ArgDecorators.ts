@@ -1,6 +1,6 @@
-import { argRegistry } from './registry'
-export { compileFieldArgs } from './compiler'
-import { IArgOptions } from './options'
+import { argRegistry } from './registry.js'
+export { compileFieldArgs } from './compiler.js'
+import { IArgOptions } from './options.js'
 
 export function Arg(options: IArgOptions = {}): ParameterDecorator {
   return (target: Object, fieldName: string, argIndex: number) => {

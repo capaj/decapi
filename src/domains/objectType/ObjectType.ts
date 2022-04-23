@@ -1,11 +1,11 @@
-import { compileObjectTypeWithConfig } from './compiler/objectType'
-import { objectTypeRegistry } from './registry'
-import { interfaceTypeImplementors } from '../interfaceType/interfaceTypeRegistry'
+import { compileObjectTypeWithConfig } from './compiler/objectType.js'
+import { objectTypeRegistry } from './registry.js'
+import { interfaceTypeImplementors } from '../interfaceType/interfaceTypeRegistry.js'
 import { ThunkReadonlyArray } from 'graphql'
 
-export { compileObjectType } from './compiler/objectType'
-export { ObjectTypeError } from './error'
-export { objectTypeRegistry, inputTypeRegistry } from './registry'
+export { compileObjectType } from './compiler/objectType.js'
+export { ObjectTypeError } from './error.js'
+export { objectTypeRegistry, inputTypeRegistry } from './registry.js'
 
 export interface IObjectTypeOptions {
   name?: string

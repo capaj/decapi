@@ -7,7 +7,7 @@ import {
   SchemaRoot,
   Query,
   compileSchema
-} from '../index'
+} from '../index.js'
 
 export enum TestEnum {
   Foo = 'Foo',

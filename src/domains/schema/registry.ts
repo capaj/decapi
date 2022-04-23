@@ -1,5 +1,5 @@
 import { GraphQLFieldConfig } from 'graphql'
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
 
 export type Getter<Result> = () => Result
 

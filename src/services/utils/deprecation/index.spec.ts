@@ -1,4 +1,4 @@
-import { showDeprecationWarning } from './index'
+import { showDeprecationWarning } from './index.js'
 
 describe('showDeprecationWarning', () => {
   it('Will not show deprecation warning twice for the same object', async () => {

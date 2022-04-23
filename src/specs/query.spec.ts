@@ -1,5 +1,11 @@
 import { graphql, GraphQLSchema, printSchema } from 'graphql'
-import { compileSchema, ObjectType, Field, SchemaRoot, Query } from '../index'
+import {
+  compileSchema,
+  ObjectType,
+  Field,
+  SchemaRoot,
+  Query
+} from '../index.js'
 
 @ObjectType()
 class Hello {

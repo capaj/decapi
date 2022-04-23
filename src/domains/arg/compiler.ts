@@ -5,11 +5,11 @@ import {
   GraphQLNonNull
 } from 'graphql'
 
-import { IArgsIndex, argRegistry } from './registry'
+import { IArgsIndex, argRegistry } from './registry.js'
 
 import 'reflect-metadata'
 
-import { injectorRegistry } from '../inject/Inject'
+import { injectorRegistry } from '../inject/Inject.js'
 
 import { Constructor, reflect } from 'typescript-rtti'
 import {
@@ -17,10 +17,10 @@ import {
   isParsableScalar,
   mapNativeScalarToGraphQL,
   mapNativeTypeToGraphQL
-} from '../../services/utils/gql/types/inferTypeByTarget'
-import { resolveType } from '../../services/utils/gql/types/typeResolvers'
-import { inputObjectTypeRegistry } from '../inputObjectType/registry'
-// import { ArgError } from './error'
+} from '../../services/utils/gql/types/inferTypeByTarget.js'
+import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
+import { inputObjectTypeRegistry } from '../inputObjectType/registry.js'
+// import { ArgError } from './error.js'
 
 export interface ITargetAndField {
   target: Constructor<Function>

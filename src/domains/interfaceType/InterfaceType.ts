@@ -2,15 +2,16 @@ import {
   interfaceTypeRegistry,
   interfaceClassesSet,
   interfaceTypeImplementors
-} from './interfaceTypeRegistry'
+} from './interfaceTypeRegistry.js'
 
 import { GraphQLInterfaceType, GraphQLResolveInfo } from 'graphql'
 
-import { compileAllFields } from '../field/Field'
-import { createCachedThunk } from '../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance'
-import { objectTypeRegistry } from '../objectType/registry'
-import { Thunk } from '../../services/types'
+import { compileAllFields } from '../field/Field.js'
+import { createCachedThunk } from '../../services/utils/cachedThunk.js'
+
+import { objectTypeRegistry } from '../objectType/registry.js'
+import { Thunk } from '../../services/types.js'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 export type ITypeResolver = (
   value: any,

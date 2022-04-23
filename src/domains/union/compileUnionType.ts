@@ -6,12 +6,12 @@ import {
   isObjectType
 } from 'graphql'
 
-import { UnionError } from './error'
-import { Thunk } from '../../services/types'
+import { UnionError } from './error.js'
+import { Thunk } from '../../services/types.js'
 import {
   resolveType,
   resolveTypesList
-} from '../../services/utils/gql/types/typeResolvers'
+} from '../../services/utils/gql/types/typeResolvers.js'
 
 export type UnionTypeResolver = (
   value: any,

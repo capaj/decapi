@@ -2,9 +2,9 @@ import {
   queryFieldsRegistry,
   mutationFieldsRegistry,
   schemaRootsRegistry
-} from './registry'
-import { SchemaFieldError } from './error'
-import { compileFieldConfig, IFieldOptions, Field } from '../field/Field'
+} from './registry.js'
+import { SchemaFieldError } from './error.js'
+import { compileFieldConfig, IFieldOptions, Field } from '../field/Field.js'
 import { Constructor } from 'typescript-rtti'
 
 function validateRootSchemaField(targetInstance: Object, fieldName: string) {

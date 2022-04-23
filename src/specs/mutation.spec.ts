@@ -8,7 +8,7 @@ import {
   Mutation,
   compileSchema,
   Query
-} from '../index'
+} from '../index.js'
 
 @InputObjectType()
 class BarType {

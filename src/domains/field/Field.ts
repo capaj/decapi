@@ -1,13 +1,16 @@
-import { fieldsRegistry, IFieldInnerConfig } from './registry'
-import { rootFieldTypes } from '../schema/rootFields'
+import { fieldsRegistry, IFieldInnerConfig } from './registry.js'
+import { rootFieldTypes } from '../schema/rootFields.js'
 
 export {
   IFieldInnerConfig,
   fieldsRegistry,
   queryFieldsRegistry
-} from './registry'
-export { compileAllFields, compileFieldConfig } from './compiler/fieldCompiler'
-export { FieldError } from './error'
+} from './registry.js'
+export {
+  compileAllFields,
+  compileFieldConfig
+} from './compiler/fieldCompiler.js'
+export { FieldError } from './error.js'
 
 export interface IFieldOptionsBase {
   description?: string

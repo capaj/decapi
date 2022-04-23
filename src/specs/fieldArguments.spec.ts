@@ -8,8 +8,8 @@ import {
   compileSchema,
   Context,
   InputField
-} from '../index'
-import { InputObjectType } from '../../src/domains/inputObjectType/InputObjectType'
+} from '../index.js'
+import { InputObjectType } from '../../src/domains/inputObjectType/InputObjectType.js'
 
 describe('Field args', () => {
   @ObjectType()

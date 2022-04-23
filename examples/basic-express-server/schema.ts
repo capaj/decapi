@@ -1,5 +1,5 @@
 import { SchemaRoot, Query, compileSchema } from 'decapi'
-import { MySchemaCustomDecorators } from './schemaWithCustomDecorators'
+import { MySchemaCustomDecorators } from './schemaWithCustomDecorators.js'
 
 @SchemaRoot()
 class MySchema {

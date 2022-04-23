@@ -4,10 +4,13 @@ import {
   GraphQLInputFieldConfigMap
 } from 'graphql'
 
-import { InputFieldError, inputFieldsRegistry } from '../InputFieldDecorators'
+import {
+  InputFieldError,
+  inputFieldsRegistry
+} from '../InputFieldDecorators.js'
 
-import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType'
-import { getClassWithAllParentClasses } from '../../../services/utils/inheritance'
+import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType.js'
+import { getClassWithAllParentClasses } from '../../../services/utils/getClassWithAllParentClasses.js'
 
 function getFinalInputFieldType(
   target: Function,

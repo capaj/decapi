@@ -1,8 +1,8 @@
 import { GraphQLType } from 'graphql'
 
-import { InputFieldError } from '../InputFieldDecorators'
-import { resolveType } from '../../../services/utils/gql/types/typeResolvers'
-import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget'
+import { InputFieldError } from '../InputFieldDecorators.js'
+import { resolveType } from '../../../services/utils/gql/types/typeResolvers.js'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget.js'
 
 export function resolveTypeOrThrow(
   type: any,

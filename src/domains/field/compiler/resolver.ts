@@ -4,26 +4,26 @@ import {
   HookExecutor,
   fieldBeforeHooksRegistry,
   fieldAfterHooksRegistry
-} from '../../hooks/hooks'
-import { isSchemaRoot, getSchemaRootInstance } from '../../schema/SchemaRoot'
+} from '../../hooks/hooks.js'
+import { isSchemaRoot, getSchemaRootInstance } from '../../schema/SchemaRoot.js'
 
 import {
   injectorRegistry,
   InjectorResolver,
   InjectorsIndex
-} from '../../inject/Inject'
-import { argRegistry, IArgInnerConfig } from '../../arg/registry'
+} from '../../inject/Inject.js'
+import { argRegistry, IArgInnerConfig } from '../../arg/registry.js'
 
 import { plainToInstance } from 'class-transformer'
 import {
   isParsableScalar,
   ParsableScalar
-} from '../../../services/utils/gql/types/inferTypeByTarget'
-import { IInjectorResolverData } from '../../../domains/inject/registry'
-import { AfterHookExecutor } from '../../../domains/hooks/registry'
-import isPromiseLike from '../../../isPromiseLike'
+} from '../../../services/utils/gql/types/inferTypeByTarget.js'
+import { IInjectorResolverData } from '../../../domains/inject/registry.js'
+import { AfterHookExecutor } from '../../../domains/hooks/registry.js'
+import isPromiseLike from '../../../isPromiseLike.js'
 import { Constructor, reflect } from 'typescript-rtti'
-import { interfaceTypeRegistry } from '../../../domains/interfaceType/interfaceTypeRegistry'
+import { interfaceTypeRegistry } from '../../../domains/interfaceType/interfaceTypeRegistry.js'
 
 interface IArgsMap {
   [argName: string]: any

@@ -4,13 +4,13 @@ import {
   GraphQLOutputType,
   GraphQLNonNull
 } from 'graphql'
-import { FieldError } from '../Field'
+import { FieldError } from '../Field.js'
 
 import {
   mutationFieldsRegistry,
   isSchemaRoot,
   queryFieldsRegistry
-} from '../../schema/SchemaRoot'
+} from '../../schema/SchemaRoot.js'
 
 export function validateResolvedType(
   target: Function,

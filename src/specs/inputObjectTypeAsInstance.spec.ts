@@ -9,7 +9,7 @@ import {
   InputObjectType,
   InputField,
   Mutation
-} from '../index'
+} from '../index.js'
 import { GraphQLDateTime } from 'graphql-scalars'
 
 @InputObjectType()

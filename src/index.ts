@@ -1,4 +1,4 @@
-export { interfaceClassesSet } from './domains/interfaceType/interfaceTypeRegistry'
+export { interfaceClassesSet } from './domains/interfaceType/interfaceTypeRegistry.js'
 
 export {
   GraphQLFloat as Float,
@@ -10,33 +10,37 @@ export {
   ObjectType,
   compileObjectType,
   objectTypeRegistry
-} from './domains/objectType/ObjectType'
+} from './domains/objectType/ObjectType.js'
 export {
   InputObjectType,
   inputObjectTypeRegistry
-} from './domains/inputObjectType/InputObjectType'
-export { compileInputObjectType } from './domains/inputObjectType/objectTypeCompiler'
+} from './domains/inputObjectType/InputObjectType.js'
+export { compileInputObjectType } from './domains/inputObjectType/objectTypeCompiler.js'
 
-export { DuplexObjectType } from './domains/duplexObjectType/DuplexObjectType'
-export { Field } from './domains/field/Field'
+export { DuplexObjectType } from './domains/duplexObjectType/DuplexObjectType.js'
+export { Field } from './domains/field/Field.js'
 export {
   InputField,
   InputFieldNullable
-} from './domains/inputField/InputFieldDecorators'
-export { DuplexField } from './domains/duplexField/DuplexField'
-export { Arg } from './domains/arg/ArgDecorators'
-export { Inject, Context, Source, Info } from './domains/inject/Inject'
-export { registerEnum, enumsRegistry } from './domains/enum/registerEnum'
-export { Union } from './domains/union/Union'
-export { unionRegistry } from './domains/union/registry'
+} from './domains/inputField/InputFieldDecorators.js'
+export { DuplexField } from './domains/duplexField/DuplexField.js'
+export { Arg } from './domains/arg/ArgDecorators.js'
+export { Inject, Context, Source, Info } from './domains/inject/Inject.js'
+export { registerEnum, enumsRegistry } from './domains/enum/registerEnum.js'
+export { Union } from './domains/union/Union.js'
+export { unionRegistry } from './domains/union/registry.js'
 
-export { InterfaceType } from './domains/interfaceType/InterfaceType'
+export { InterfaceType } from './domains/interfaceType/InterfaceType.js'
 
-export { Before, After } from './domains/hooks/hooks'
+export { Before, After } from './domains/hooks/hooks.js'
 export {
   SchemaRoot,
   schemaRootsRegistry,
   compileSchema
-} from './domains/schema/SchemaRoot'
+} from './domains/schema/SchemaRoot.js'
 
-export { Query, Mutation, QueryAndMutation } from './domains/schema/rootFields'
+export {
+  Query,
+  Mutation,
+  QueryAndMutation
+} from './domains/schema/rootFields.js'

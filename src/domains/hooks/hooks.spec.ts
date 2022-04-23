@@ -12,7 +12,7 @@ describe('Hooks', () => {
 
     const { bar } = compileObjectType(Foo).getFields()
 
-  // @ts-expect-error 3/21/2022
+    // @ts-expect-error 3/21/2022
     await bar.resolve(null, null, null, null)
 
     expect(callback).toBeCalled()
@@ -34,7 +34,7 @@ describe('Hooks', () => {
 
     const { bar } = compileObjectType(Foo).getFields()
 
-  // @ts-expect-error 3/21/2022
+    // @ts-expect-error 3/21/2022
     await bar.resolve('foo', { bar: 42 }, 'baz', null)
 
     expect(beforeCb).toBeCalledWith({
@@ -76,7 +76,7 @@ describe('Hooks', () => {
     const { bar } = compileObjectType(Foo).getFields()
 
     async function exec() {
-  // @ts-expect-error 3/21/2022
+      // @ts-expect-error 3/21/2022
       await bar.resolve(null, null, null, null)
     }
 
@@ -98,7 +98,7 @@ describe('Hooks', () => {
 
     const { bar } = compileObjectType(Foo).getFields()
 
-  // @ts-expect-error 3/21/2022
+    // @ts-expect-error 3/21/2022
     await bar.resolve(null, null, null, null)
 
     expect(callback).toBeCalled()
@@ -129,7 +129,7 @@ describe('Hooks', () => {
 
     const { bar } = compileObjectType(Foo).getFields()
 
-  // @ts-expect-error 3/21/2022
+    // @ts-expect-error 3/21/2022
     const result = await bar.resolve(null, null, null, null)
 
     expect(beforeCb).toBeCalledWith(1)

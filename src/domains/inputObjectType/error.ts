@@ -1,4 +1,4 @@
-import { BaseError } from '../../services/error'
+import { BaseError } from '../../services/error.js'
 
 export class InputObjectTypeError extends BaseError {
   constructor(target: Function, msg: string) {

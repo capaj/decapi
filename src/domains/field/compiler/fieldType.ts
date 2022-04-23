@@ -1,11 +1,11 @@
 import { GraphQLType } from 'graphql'
 
-import { FieldError } from '../Field'
+import { FieldError } from '../Field.js'
 import {
   IResolveTypeParams,
   resolveType
-} from '../../../services/utils/gql/types/typeResolvers'
-import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget'
+} from '../../../services/utils/gql/types/typeResolvers.js'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget.js'
 
 export function resolveTypeOrThrow(
   fieldConfig: IResolveTypeParams,

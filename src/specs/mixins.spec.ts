@@ -7,7 +7,7 @@ import {
   Query,
   compileSchema,
   interfaceClassesSet
-} from '../index'
+} from '../index.js'
 
 interface IHasMyProp {
   myProp: number

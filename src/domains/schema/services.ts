@@ -1,6 +1,6 @@
-import { schemaRootsRegistry } from './registry'
-import { SchemaRootError, SchemaCompilationError } from './error'
-import { Constructable } from '../../services/types'
+import { schemaRootsRegistry } from './registry.js'
+import { SchemaRootError, SchemaCompilationError } from './error.js'
+import { Constructable } from '../../services/types.js'
 
 function hasDuplicates(arr: Function[]) {
   return new Set(arr).size !== arr.length

@@ -3,14 +3,14 @@ import {
   ObjectTypeError,
   objectTypeRegistry,
   IObjectTypeOptions
-} from '../ObjectType'
+} from '../ObjectType.js'
 
-import { compileAllFields } from '../../field/Field'
+import { compileAllFields } from '../../field/Field.js'
 
-import { interfaceTypeRegistry } from '../../interfaceType/interfaceTypeRegistry'
-import { createCachedThunk } from '../../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../../services/utils/inheritance'
-import { Getter } from '../../../domains/schema/registry'
+import { interfaceTypeRegistry } from '../../interfaceType/interfaceTypeRegistry.js'
+import { createCachedThunk } from '../../../services/utils/cachedThunk.js'
+import { getClassWithAllParentClasses } from '../../../services/utils/getClassWithAllParentClasses.js'
+import { Getter } from '../../../domains/schema/registry.js'
 import { Constructor } from 'typescript-rtti'
 
 export const compileOutputTypeCache = new WeakMap<Function, GraphQLObjectType>()

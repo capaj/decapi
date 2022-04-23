@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { buildSchema, Field, ObjectType, Resolver, Query } from 'type-graphql'
 
-import { runBenchmark } from './run'
+import { runBenchmark } from './run.js'
 
 @ObjectType()
 class SampleObject {

@@ -2,11 +2,11 @@ export {
   schemaRootsRegistry,
   mutationFieldsRegistry,
   queryFieldsRegistry
-} from './registry'
-import { schemaRootsRegistry } from './registry'
+} from './registry.js'
+import { schemaRootsRegistry } from './registry.js'
 
-export { compileSchema } from './compiler'
-export { isSchemaRoot, getSchemaRootInstance } from './services'
+export { compileSchema } from './compiler.js'
+export { isSchemaRoot, getSchemaRootInstance } from './services.js'
 
 export function SchemaRoot(config: object = {}): ClassDecorator {
   return (target) => {

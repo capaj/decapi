@@ -2,15 +2,16 @@ import { GraphQLInputObjectType, GraphQLInputFieldConfigMap } from 'graphql'
 import {
   InputObjectTypeError,
   inputObjectTypeRegistry
-} from './InputObjectType'
+} from './InputObjectType.js'
 
 import {
   inputFieldsRegistry,
   compileAllInputFields
-} from '../inputField/InputFieldDecorators'
-import { createCachedThunk } from '../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance'
+} from '../inputField/InputFieldDecorators.js'
+import { createCachedThunk } from '../../services/utils/cachedThunk.js'
+
 import { Constructor } from 'typescript-rtti'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 const compileOutputTypeCache = new WeakMap<Function, GraphQLInputObjectType>()
 

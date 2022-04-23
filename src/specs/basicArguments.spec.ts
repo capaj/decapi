@@ -6,7 +6,7 @@ import {
   ObjectType,
   Query,
   SchemaRoot
-} from '../../src/index'
+} from '../../src/index.js'
 
 import { printSchema } from 'graphql'
 

@@ -1,18 +1,18 @@
 import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql'
-import { FieldError, fieldsRegistry } from '../Field'
+import { FieldError, fieldsRegistry } from '../Field.js'
 
-import { compileFieldResolver } from './resolver'
-import { isRootFieldOnNonRootBase, validateResolvedType } from './services'
+import { compileFieldResolver } from './resolver.js'
+import { isRootFieldOnNonRootBase, validateResolvedType } from './services.js'
 
 import {
   resolveTypeOrThrow,
   throwIfNotInferableType,
   validateNotInferableField
-} from './fieldType'
-import { compileFieldArgs } from '../../arg/ArgDecorators'
+} from './fieldType.js'
+import { compileFieldArgs } from '../../arg/ArgDecorators.js'
 import { Constructor } from 'typescript-rtti'
-import { resolveType } from '../../../services/utils/gql/types/typeResolvers'
-import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget'
+import { resolveType } from '../../../services/utils/gql/types/typeResolvers.js'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget.js'
 
 export function compileFieldConfig(
   target: Constructor<Function>,

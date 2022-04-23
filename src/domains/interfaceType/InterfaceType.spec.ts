@@ -5,7 +5,7 @@ import {
   compileSchema,
   SchemaRoot,
   InterfaceType
-} from '../../index'
+} from '../../index.js'
 import { GraphQLInt, graphql, printSchema } from 'graphql'
 
 describe('InterfaceType', () => {

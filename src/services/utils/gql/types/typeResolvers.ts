@@ -1,6 +1,9 @@
 import { isType, GraphQLType, GraphQLList, GraphQLNonNull } from 'graphql'
 
-import { isParsableScalar, mapNativeTypeToGraphQL } from './inferTypeByTarget'
+import {
+  isParsableScalar,
+  mapNativeTypeToGraphQL
+} from './inferTypeByTarget.js'
 import {
   enumsRegistry,
   unionRegistry,
@@ -8,10 +11,10 @@ import {
   objectTypeRegistry,
   compileInputObjectType,
   compileObjectType
-} from '../../../../index'
+} from '../../../../index.js'
 
-import { Thunk } from '../../../types'
-import { interfaceTypeRegistry } from '../../../../domains/interfaceType/interfaceTypeRegistry'
+import { Thunk } from '../../../types.js'
+import { interfaceTypeRegistry } from '../../../../domains/interfaceType/interfaceTypeRegistry.js'
 
 function isNativeClass(thing: any) {
   return (

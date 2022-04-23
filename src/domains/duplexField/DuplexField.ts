@@ -1,11 +1,11 @@
-import { IFieldOptions } from '../field/Field'
-import { fieldsRegistry, IFieldInnerConfig } from '../field/registry'
+import { IFieldOptions } from '../field/Field.js'
+import { fieldsRegistry, IFieldInnerConfig } from '../field/registry.js'
 import {
   inputFieldsRegistry,
   IFieldInputInnerConfig
-} from '../inputField/registry'
+} from '../inputField/registry.js'
 
-export { FieldError } from './error'
+export { FieldError } from './error.js'
 
 interface IDuplexFieldOptions extends IFieldOptions {
   inputNullable?: boolean

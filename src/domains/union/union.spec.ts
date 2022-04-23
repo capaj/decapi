@@ -10,7 +10,7 @@ import {
 } from '../..'
 
 import 'jest'
-import { resolveType } from '../../services/utils/gql/types/typeResolvers'
+import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
 
 class ConstructorAssigner<T = any> {
   constructor(parameters: Partial<T>) {

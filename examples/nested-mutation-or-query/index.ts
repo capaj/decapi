@@ -1,4 +1,4 @@
-import { schema } from './schema'
+import { schema } from './schema.js'
 
 import Fastify from 'fastify'
 import mercurius from 'mercurius'

@@ -1,14 +1,14 @@
-import { inputFieldsRegistry, IFieldInputInnerConfig } from './registry'
+import { inputFieldsRegistry, IFieldInputInnerConfig } from './registry.js'
 
 export {
   IFieldInputInnerConfig as FieldInputInnerConfig,
   inputFieldsRegistry
-} from './registry'
+} from './registry.js'
 export {
   compileAllInputFields,
   compileInputFieldConfig
-} from './compiler/index'
-export { InputFieldError } from './error'
+} from './compiler/index.js'
+export { InputFieldError } from './error.js'
 
 export interface IInputFieldOptions {
   description?: string

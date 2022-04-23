@@ -1,5 +1,11 @@
-import { compileSchema, Field, ObjectType, Query, SchemaRoot } from '../index'
-import { runBenchmark } from './run'
+import {
+  compileSchema,
+  Field,
+  ObjectType,
+  Query,
+  SchemaRoot
+} from '../index.js'
+import { runBenchmark } from './run.js'
 
 @ObjectType()
 class SampleObject {
