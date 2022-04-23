@@ -1,7 +1,9 @@
 {
   "name": "decapi",
-  "version": "2.0.0-beta.5",
-  "main": "lib/index.js",
+  "version": "2.0.0-beta.6",
+  "type": "module",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "types": "types/index.d.ts",
   "license": "MIT",
   "scripts": {
@@ -13,8 +15,10 @@
     "benchTG": "ts-node src/benchmark/type-graphql",
     "test": "jest --coverage",
     "w": "jest --watch",
-    "build": "rm -rf types lib && tsc --project tsconfig.json",
-    "precommit": "pretty-quick --staged"
+    "buildCjs": "rm -rf types lib && tsc --project tsconfig.json --module commonjs --outDir dist/cjs",
+    "buildEsm": "rm -rf types lib && tsc --project tsconfig.json --module ESNext --outDir dist/esm",
+    "precommit": "pretty-quick --staged",
+    "build": "yarn buildCjs && yarn buildEsm"
   },
   "engines": {
     "node": ">=14"
