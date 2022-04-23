@@ -74,7 +74,7 @@ function convertArgsArrayToArgsMap({
       return
     }
     // don't publish args marked as auto Injected
-    if (injectorRegistry.has(target, fieldName, index)) {
+    if (injectorRegistry.has(target, fieldName, index.toString())) {
       return
     }
 
