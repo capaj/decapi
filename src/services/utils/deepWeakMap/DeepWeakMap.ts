@@ -1,4 +1,4 @@
-export type DeepWeakMapPath = string | Array<string | number>
+export type DeepWeakMapPath = (string) | Array<string | number>
 
 function flattenPaths(paths: DeepWeakMapPath[]): string[] {
   return paths.reduce((accumulatedPath: string[], nextPath) => {

@@ -3,8 +3,8 @@ export { compileFieldArgs } from './compiler.js'
 import { IArgOptions } from './options.js'
 
 export function Arg(options: IArgOptions = {}): ParameterDecorator {
-  return (target: Object, fieldName: string, argIndex: number) => {
-    argRegistry.set(target.constructor, [fieldName, argIndex], {
+  return (target, fieldName, argIndex) => {
+    argRegistry.set(target.constructor, [fieldName as string, argIndex], {
       ...options,
       argIndex
     })

@@ -20,7 +20,6 @@ import {
 } from '../../services/utils/gql/types/inferTypeByTarget.js'
 import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
 import { inputObjectTypeRegistry } from '../inputObjectType/registry.js'
-// import { ArgError } from './error.js'
 
 export interface ITargetAndField {
   target: Constructor<Function>
