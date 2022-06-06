@@ -145,7 +145,8 @@ We've added `{ type: [String] }` as `@Field` options. Type can be anything that 
 - Native JS scalars: `String`, `Number`, `Boolean`, `Date`.
 - Any type that is already compiled to `graphql` eg. `GraphQLFloat` or any type from external graphql library etc
 - Any class decorated with `@ObjectType`
-- Single element array for list types eg. `[String]` or `[GraphQLFloat]`
+- an enum registered with `registerEnum`
+- Single element array for list types eg. `[String]` or `[GraphQLFloat]` or `[MyEnum]`
 
 ## Writing Asynchronously
 
@@ -162,17 +163,25 @@ class Product {
 }
 ```
 
-## Compared to type-graphql
+## Upgrading from 1.0.0 to 2.0.0
 
-There is a much more popular [library](https://github.com/19majkel94/type-graphql) with the same goals-so what makes decapi different?
+Firstly, you must install all the new peer dependencies.
+This major was a complete rewrite of the reflection of types. From 2.0.0 decapi uses typescript-rtti to infer graphql types from typescript. This should work for all TS types. If you encounter a type which cannot be inferred, please raise an issue.
+This means you should always have your decorators without explicit `type` property.
 
-1.  decapi does reflection through typescript-rtti, so it can infer 99% directly from typescript types without having to write them twice
+## Comparisons to other libraries
+
+decapi does reflection through typescript-rtti, so it can always infer a type directly from typescript without having to write them twice. This is what sets it apart, but there are other differences:
+
+### type-graphql
+
+There is a much more popular [library](https://github.com/19majkel94/type-graphql) with the same goals. Differences:
+
+1.  decapi does reflection through typescript-rtti, so it can always infer a type directly from typescript without having to write them twice
 2.  Decapi has smaller API surface-it only has hooks on top of the basic decorators for constructing schemas. Whereas type-graphql has authorization, middleware, guards.
 3.  Also decapi supports graphql v16. Typegraphql is still only supporting Graphql v15
 
-## Why forking?
-
-Initially I wanted to contribute to [typegql](https://github.com/prismake/typegql) and work on it together with @pie6k, but it soon became obvious that we both have something different in mind. Just to briefly summarize the differences:
+### typegql
 
 - decapi has `@DuplexObjectType` and `@DuplexField`
 - decapi supports interfaces and mixins
@@ -180,12 +189,6 @@ Initially I wanted to contribute to [typegql](https://github.com/prismake/typegq
 - decapi casts plain objects by default, which means it is much easier to use without ORMs. Even prisma needs this casting, because all the objects returned are POJO objects.
 - InputObjectType argument passed to Field/Query method is not just a plain object, but an instance of it's class.
 - decapi allows you to have an empty object type-you can populate it with fields at runtime
-
-## Upgrading from 1.0.0 to 2.0.0
-
-Firstly, you must install all the new peer dependencies.
-This major was a complete rewrite of the reflection of types. From 2.0.0 decapi uses typescript-rtti to infer graphql types from typescript. This works for 99% of TS types.
-This means you should always have your decorators without explicit `type` property.
 
 ## TC39 decorators proposal
 
