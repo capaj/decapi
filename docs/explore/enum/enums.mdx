@@ -38,7 +38,7 @@ class User {
   id: number
 
   @Field()
-  hasAnyTaskOfType(@Arg({ type: TaskType }) type: TaskType): boolean {
+  hasAnyTaskOfType(@Arg() type: TaskType): boolean {
     return tasksService.hasTasksOfType(type)
   }
 }
