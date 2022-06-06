@@ -31,6 +31,7 @@ export function compileFieldConfig(
   const args = compileFieldArgs(target as any, fieldName, !!onlyDecoratedArgs)
 
   const inferredType = inferTypeByTarget(target.prototype, fieldName)
+  // console.log('~ inferredType', inferredType)
 
   throwIfNotInferableType(inferredType, target, fieldName)
 

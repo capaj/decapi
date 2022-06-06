@@ -20,6 +20,7 @@ import {
 } from '../../services/utils/gql/types/inferTypeByTarget.js'
 import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
 import { inputObjectTypeRegistry } from '../inputObjectType/registry.js'
+import { enumsRegistry } from '../enum/registry.js'
 
 export interface ITargetAndField {
   target: Constructor<Function>
@@ -134,7 +135,7 @@ export function compileFieldArgs(
       const { runtimeType, isNullable } = inferTypeFromRtti(rtti)
       if (runtimeType === undefined) {
         throw new Error(
-          `Argument ${target.name}.${fieldName}[${index}]: Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar or a class decorated with @InputObjectType`
+          `Argument ${target.name}.${fieldName}[${index}]: Could not infer type of argument. Make sure you are using a type which works as graphql input type.`
           // {
           //   target,
           //   fieldName
@@ -151,8 +152,9 @@ export function compileFieldArgs(
       )
 
       let gqlType: any
-
-      if (isParsableScalar(runtimeType)) {
+      if (enumsRegistry.has(runtimeType)) {
+        gqlType = enumsRegistry.get(runtimeType)
+      } else if (isParsableScalar(runtimeType)) {
         gqlType = mapNativeScalarToGraphQL(runtimeType)
       } else if (IOTCompile) {
         gqlType = isArrayType
@@ -163,8 +165,9 @@ export function compileFieldArgs(
       }
 
       if (!gqlType) {
+        // console.warn(runtimeType)
         throw new Error(
-          `${runtimeType} cannot be used as a resolve type because it is not an @InputObjectType`
+          `Argument ${target.name}.${fieldName}[${index}]: Could not resolve type of argument. Make sure you are using a type which works as graphql input type.`
         )
       }
 

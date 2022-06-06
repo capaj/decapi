@@ -5,6 +5,25 @@ import { Query } from '../schema/rootFields.js'
 import { printSchema, graphql } from 'graphql'
 import { Arg } from '../arg/ArgDecorators.js'
 
+enum IntEnum {
+  one,
+  two
+}
+
+enum StateEnum {
+  Done = 'DONE',
+  In_Progress = 'IN_PROGRESS',
+  Finished = 'FINISHED',
+  Cancelled = 'CANCELLED'
+}
+
+enum StateEnumUsingKeys {
+  Done = 'DONE',
+  InProgress = 'INPROGRESS',
+  Finished = 'FINISHED',
+  Cancelled = 'CANCELLED'
+}
+
 describe('Enums', () => {
   it('throws when the enum key cannot be used with GQL', () => {
     enum Foo {
@@ -83,25 +102,6 @@ describe('Enums', () => {
   })
 
   it('renders schema with an enum used in a query', async () => {
-    enum IntEnum {
-      one,
-      two
-    }
-
-    enum StateEnum {
-      Done = 'DONE',
-      In_Progress = 'IN_PROGRESS',
-      Finished = 'FINISHED',
-      Cancelled = 'CANCELLED'
-    }
-
-    enum StateEnumUsingKeys {
-      Done = 'DONE',
-      InProgress = 'INPROGRESS',
-      Finished = 'FINISHED',
-      Cancelled = 'CANCELLED'
-    }
-
     registerEnum(StateEnum, { name: 'StateEnum' })
     registerEnum(StateEnumUsingKeys, {
       name: 'StateEnumUsingKeys',
@@ -112,29 +112,34 @@ describe('Enums', () => {
     @SchemaRoot()
     class FooSchema {
       @Query()
-      echoAsInferred(@Arg({ type: StateEnum }) input: StateEnum): StateEnum {
+      echoAsInferred(@Arg() input: StateEnum): StateEnum {
         return input
       }
       @Query({ type: StateEnum })
-      echoAsEnum(@Arg({ type: StateEnum }) input: StateEnum): StateEnum {
-        return input
-      }
-
-      @Query({ type: StateEnumUsingKeys })
-      echoAsEnum2(
-        @Arg({ type: StateEnumUsingKeys }) input: StateEnumUsingKeys
-      ): StateEnumUsingKeys {
-        expect(input).toBe('FINISHED')
+      echoAsEnum(@Arg() input: StateEnum): StateEnum {
         return input
       }
 
       @Query()
-      intAsInferred(@Arg({ type: IntEnum }) input: IntEnum): IntEnum {
+      echoAsEnum2(@Arg() input: StateEnumUsingKeys): StateEnumUsingKeys {
+        expect(input).toBe('FINISHED')
         return input
       }
 
-      @Query({ type: IntEnum })
-      intAsEnum(@Arg({ type: IntEnum }) input: IntEnum): IntEnum {
+      // @Query()
+      // echoAsEnumNullables( // TODO uncomment when rtti-typescript supports this
+      //   @Arg() input: StateEnumUsingKeys | null
+      // ): StateEnumUsingKeys | null {
+      //   return input
+      // }
+
+      @Query()
+      intAsInferred(@Arg() input: IntEnum): IntEnum {
+        return input
+      }
+
+      @Query()
+      intAsEnum(@Arg() input: IntEnum): IntEnum {
         return input
       }
     }
@@ -160,7 +165,7 @@ describe('Enums', () => {
           "echoAsEnum2": "Finished",
           "echoAsInferred": "IN_PROGRESS",
           "intAsEnum": "two",
-          "intAsInferred": 1,
+          "intAsInferred": "two",
         },
       }
     `)

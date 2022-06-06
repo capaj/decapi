@@ -1,11 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Complex arguments should not allow complex argument type decorated with @ObjectType 1`] = `
-"class InputTwo {
-        } cannot be used as a resolve type because it is not an @InputObjectType"
-`;
+exports[`Complex arguments should not allow complex argument type decorated with @ObjectType 1`] = `"Argument Foo.bar[0]: Could not resolve type of argument. Make sure you are using a type which works as graphql input type."`;
 
-exports[`Complex arguments should not allow complex argument type not decorated with @InputObjectType 1`] = `
-"class InputOne {
-        } cannot be used as a resolve type because it is not an @InputObjectType"
-`;
+exports[`Complex arguments should not allow complex argument type not decorated with @InputObjectType 1`] = `"Argument Foo.bar[0]: Could not resolve type of argument. Make sure you are using a type which works as graphql input type."`;

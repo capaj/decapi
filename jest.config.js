@@ -10,7 +10,8 @@ export default {
   globals: {
     'ts-jest': {
       diagnostics: false,
-      compiler: 'ttypescript'
+      compiler: 'ttypescript',
+      useESM: true
     }
   }
 }

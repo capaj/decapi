@@ -14,6 +14,7 @@ import {
   ReflectedTypeRef
 } from 'typescript-rtti'
 import { Literal, RtType } from 'typescript-rtti/dist/common'
+import { enumsRegistry } from '../../../../domains/enum/registry'
 
 // tslint:disable-next-line: use-primitive-type
 export type ParsableScalar = String | Number | Boolean | Date
@@ -106,13 +107,14 @@ const inferUnion = (
     }
   }
 
-  const cls = withoutEmpties[0].as('class').class
+  const rtti = withoutEmpties[0]
+  const type = rtti.is('enum') ? rtti.as('enum').enum : rtti.as('class').class
 
   if (unionTypes.length === 1) {
-    return { runtimeType: cls, isNullable: false }
+    return { runtimeType: type, isNullable: false }
   }
 
-  return { runtimeType: cls, isNullable: true }
+  return { runtimeType: type, isNullable: true }
 }
 
 /**
@@ -123,6 +125,8 @@ export const inferTypeFromRtti = (rtti: ReflectedTypeRef): IInferResult => {
 
   if (rtti.isClass()) {
     inferred = rtti.as('class').class
+  } else if (rtti.is('enum')) {
+    return { runtimeType: rtti.as('enum').enum, isNullable: false }
   } else if (rtti.isUnion()) {
     return inferUnion(rtti.as('union').types)
   } else if (rtti.isGeneric()) {
@@ -152,6 +156,7 @@ export const inferTypeFromRtti = (rtti: ReflectedTypeRef): IInferResult => {
 
     return { runtimeType: [inferred], isNullable: false }
   }
+  // console.log('~ inferred', rtti.as('enum'))
 
   return { runtimeType: inferred, isNullable: false }
 }
