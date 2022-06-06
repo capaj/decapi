@@ -552,7 +552,7 @@ describe('Field', () => {
       expect(result.data).toMatchSnapshot()
     })
 
-    it('should register a field with castTo', async () => {
+    it('should register a field with an explicit type', async () => {
       const result = await graphql({
         schema,
         source: `
@@ -586,7 +586,7 @@ describe('Field', () => {
       expect(result.errors).toBeUndefined()
       expect(result.data?.castedQuery).toMatchSnapshot()
     })
-    it('should be able to castTo an array of classes', async () => {
+    it('should be able cast result as array of classes', async () => {
       const result = await graphql({
         schema,
         source: `
@@ -604,7 +604,7 @@ describe('Field', () => {
       expect(result.errors).toBeUndefined()
       expect(result.data?.castedQuery).toMatchSnapshot()
     })
-    it('throws when returning array of arrays with an array castTo', async () => {
+    it('throws when returning array of arrays with an array type', async () => {
       const result = await graphql({
         schema,
         source: `

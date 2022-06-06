@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Field IFieldOptions should be able to castTo an array of classes 1`] = `
+exports[`Field IFieldOptions should be able cast result as array of classes 1`] = `
 Object {
   "bar": "castedFromAQuery",
   "castedFieldAsArray": Array [
@@ -44,7 +44,7 @@ type Foo {
 }"
 `;
 
-exports[`Field IFieldOptions should register a field with castTo 1`] = `
+exports[`Field IFieldOptions should register a field with an explicit type 1`] = `
 Object {
   "bar": "castedFromAQuery",
   "castedArrayField": Array [
