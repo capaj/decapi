@@ -14,7 +14,6 @@ import {
   ReflectedTypeRef
 } from 'typescript-rtti'
 import { Literal, RtType } from 'typescript-rtti/dist/common'
-import { enumsRegistry } from '../../../../domains/enum/registry'
 
 // tslint:disable-next-line: use-primitive-type
 export type ParsableScalar = String | Number | Boolean | Date
