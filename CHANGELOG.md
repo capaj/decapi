@@ -2,7 +2,7 @@
 
 To refer to all changes made, see commits.
 
-## 2.0.0
+## 2.0.1
 
 - you must use graphql 17, older are not supported anymore.
 - complete rewrite of type inferring-thanks to [typescript-rtti](https://github.com/typescript-rtti/typescript-rtti) we are able to infer all the types directly from TS types
