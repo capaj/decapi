@@ -5,7 +5,9 @@ import {
   isNamedType,
   getNamedType,
   graphql,
-  printSchema
+  printSchema,
+  GraphQLNonNull,
+  GraphQLInt
 } from 'graphql'
 
 import 'reflect-metadata'
@@ -19,7 +21,6 @@ import {
   Arg
 } from '../..'
 import { GraphQLDateTime } from 'graphql-scalars'
-import { ArrayField } from './Field'
 
 describe('Field', () => {
   it('Resolves fields with default value', async () => {
@@ -31,6 +32,7 @@ describe('Field', () => {
     const compiled = compileObjectType(Foo)
     const barField = compiled.getFields().bar
 
+    // @ts-expect-error 3/21/2022
     expect(await barField.resolve(new Foo(), {}, null, null)).toEqual('baz')
   })
 
@@ -46,6 +48,7 @@ describe('Field', () => {
     const compiled = compileObjectType(Foo)
     const barField = compiled.getFields().bar
 
+    // @ts-expect-error 3/21/2022
     expect(await barField.resolve(new Foo(), {}, null, null as any)).toEqual(
       'baz'
     )
@@ -71,6 +74,7 @@ describe('Field', () => {
     expect(compiled.getFields().bar).toBeFalsy()
     expect(bazField).toBeTruthy()
     expect(bazField.description).toEqual('test')
+    // @ts-expect-error 3/21/2022
     expect(await bazField.resolve(new Foo(), {}, null, null as any)).toBe(
       'test'
     )
@@ -95,22 +99,45 @@ describe('Field', () => {
 
     const { bar, baz, foo, boo, coo } = compileObjectType(Foo).getFields()
 
-    expect(bar.type).toEqual(GraphQLString)
-    expect(baz.type).toEqual(GraphQLFloat)
-    expect(foo.type).toEqual(GraphQLBoolean)
-    expect(boo.type).toEqual(GraphQLBoolean)
-    expect(coo.type).toEqual(GraphQLBoolean)
+    expect(bar.type).toEqual(new GraphQLNonNull(GraphQLString))
+    expect(baz.type).toEqual(new GraphQLNonNull(GraphQLFloat))
+    expect(foo.type).toEqual(new GraphQLNonNull(GraphQLBoolean))
+    expect(boo.type).toEqual(new GraphQLNonNull(GraphQLBoolean))
+    expect(coo.type).toEqual(new GraphQLNonNull(GraphQLBoolean))
+  })
+
+  it('uses nullability inferred from TS', () => {
+    @ObjectType()
+    class Foo {
+      @Field({ type: GraphQLInt })
+      nonNullable: number
+      @Field({ type: GraphQLInt })
+      nullable: number | null
+      @Field({ type: GraphQLInt, nullable: false }) // the explicit nullability in the config should override the TS nullability
+      nonNullableSecond: number | null
+
+      @Field({ type: GraphQLInt, nullable: true }) // the explicit nullability in the config should override the TS nullability
+      nullableSecond: number
+    }
+
+    const { nonNullable, nullable, nonNullableSecond, nullableSecond } =
+      compileObjectType(Foo).getFields()
+
+    expect(nonNullable.type).toEqual(new GraphQLNonNull(GraphQLInt))
+    expect(nullable.type).toEqual(GraphQLInt)
+    expect(nonNullableSecond.type).toEqual(new GraphQLNonNull(GraphQLInt))
+    expect(nullableSecond.type).toEqual(GraphQLInt)
   })
 
   it('Properly sets explicit field type', () => {
     @ObjectType()
     class Foo {
-      @Field({ type: () => GraphQLFloat })
+      @Field({ type: () => GraphQLDateTime })
       bar: string
     }
 
     const { bar } = compileObjectType(Foo).getFields()
-    expect(bar.type).toEqual(GraphQLFloat)
+    expect(bar.type).toEqual(new GraphQLNonNull(GraphQLDateTime))
   })
 
   it('Supports references to other types', () => {
@@ -174,7 +201,7 @@ describe('Field', () => {
     expect(() =>
       compileObjectType(Bar).getFields()
     ).toThrowErrorMatchingInlineSnapshot(
-      `"@ObjectType Bar.foo: Explicit type is incorrect. Make sure to use either native graphql type or class that is registered with @Type decorator"`
+      `"Class Foo cannot be used as a resolve type because it is not an @ObjectType"`
     )
   })
 
@@ -183,20 +210,29 @@ describe('Field', () => {
       @ObjectType()
       class Foo {
         @Field({ type: () => String })
+        barNonNull: any
+        @Field({ type: () => String, nullable: true })
         bar: any
         @Field({ type: () => Number })
         baz: any
-        @Field({ type: Date })
-        date(@Arg({ type: GraphQLDateTime }) d: Date) {
+        @Field()
+        date(@Arg({ type: GraphQLDateTime }) d: Date | null) {
           return d
         }
         @Field()
-        bool: boolean
+        bool: boolean | null
       }
 
-      const { bar, baz, date, bool } = compileObjectType(Foo).getFields()
+      const { bar, baz, date, bool, barNonNull } =
+        compileObjectType(Foo).getFields()
+      expect(barNonNull.type.toString()).toBe(
+        new GraphQLNonNull(GraphQLString).toString()
+      )
+
       expect(bar.type).toBe(GraphQLString)
-      expect(baz.type).toBe(GraphQLFloat)
+      expect(baz.type.toString()).toBe(
+        new GraphQLNonNull(GraphQLFloat).toString()
+      )
       expect(date.type).toBe(GraphQLDateTime)
       expect(bool.type).toBe(GraphQLBoolean)
     })
@@ -204,8 +240,8 @@ describe('Field', () => {
     it('should interpret args correctly', async () => {
       @SchemaRoot()
       class FooSchema {
-        @Query({ type: Date })
-        date(@Arg({ type: GraphQLDateTime }) d: Date) {
+        @Query()
+        date(@Arg() d: Date) {
           return d.toISOString()
         }
       }
@@ -222,17 +258,17 @@ describe('Field', () => {
       expect(result.errors).toBeUndefined()
       expect(result.data).toMatchInlineSnapshot(`
         Object {
-          "date": 2020-06-30T08:29:20.879Z,
+          "date": "2020-06-30T08:29:20.879Z",
         }
       `)
     })
   })
 
-  it('throws an error when explicit type is "undefined"', (done) => {
+  it('throws an error when explicit type is "undefined"', () => {
     try {
       @ObjectType()
       class Foo {
-        @Field({ type: undefined, isNullable: false })
+        @Field({ type: undefined, nullable: false })
         bar: string
       }
 
@@ -242,50 +278,71 @@ describe('Field', () => {
         [TypeError: Field "bar" on class Foo {
                     } got an "undefined" as explicit type]
       `)
-      done()
     }
   })
 
-  it('Shows proper error message when trying to use list type without being explicit about item type', () => {
+  it('throws when the method is returning two different scalars', () => {
     @ObjectType()
-    class Foo {
+    class Foo2 {
       @Field()
-      bar: string[]
+      noTypeMethodReturningNumberOrString(): string {
+        // let num = 1
+        // if (Math.random() > 0.5) {
+        //   return num
+        // }
+        // } else if (true) {
+        //   return num + 1
+        // }
+        return 'baz'
+      }
     }
-
-    expect(() =>
-      compileObjectType(Foo).getFields()
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"@ObjectType Foo.bar: Field type was infered as \\"function Array() { [native code] }\\" so it's required to explicitly set the type as it's not possible to guess it. Pass it in a config for the field like: @Field({ type: ItemType })"`
-    )
+    try {
+      compileObjectType(Foo2).getFields()
+    } catch (err) {
+      expect(err).toMatchInlineSnapshot()
+    }
   })
 
-  it('Shows proper error message when trying to use promise type without being explicit about item type', () => {
+  it('infers type without being explicit about item type', () => {
     @ObjectType()
     class Foo {
       @Field()
-      async bar() {
+      async noTypeMethod() {
+        if (process.env.A) {
+          return null
+        }
         return 'baz'
       }
     }
 
-    expect(() =>
-      compileObjectType(Foo).getFields()
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"@ObjectType Foo.bar: Field type was infered as \\"function Promise() { [native code] }\\" so it's required to explicitly set the type as it's not possible to guess it. Pass it in a config for the field like: @Field({ type: ItemType })"`
-    )
+    const { noTypeMethod } = compileObjectType(Foo).getFields()
+    expect(noTypeMethod.type.toJSON()).toBe('String')
+  })
+
+  it('infers from a Promise', () => {
+    @ObjectType()
+    class Foo {
+      @Field()
+      async bar(): Promise<string> {
+        return 'baz'
+      }
+    }
+
+    compileObjectType(Foo).getFields()
   })
 
   it('Properly supports list type of field', () => {
     @ObjectType()
     class Foo {
-      @Field({ type: [String] })
-      bar: string[]
+      @Field()
+      fooMethod: string[]
     }
 
-    const { bar } = compileObjectType(Foo).getFields()
-    expect(isNamedType(bar.type)).toBe(false)
-    expect(getNamedType(bar.type)).toBe(GraphQLString)
+    const { fooMethod } = compileObjectType(Foo).getFields()
+
+    expect(isNamedType(fooMethod.type)).toBe(false)
+    expect(getNamedType(fooMethod.type)).toBe(GraphQLString)
+    expect(fooMethod.type.toJSON()).toBe('[String!]!')
   })
 
   it('Is properly passing `this` default values', async () => {
@@ -296,36 +353,41 @@ describe('Field', () => {
       bar: string = this.instanceVar
     }
     const { bar } = compileObjectType(Foo).getFields()
+    // @ts-expect-error 3/21/2022
     const resolvedValue = await bar.resolve(new Foo(), null, null, null)
     expect(resolvedValue).toEqual('instance')
   })
 
-  it('Will not allow promise field without type addnotation', async () => {
+  it('allows promise field without type annotation', async () => {
     @ObjectType()
     class Foo {
       @Field()
-      async bar(): Promise<number> {
+      async float(): Promise<number> {
+        return 10
+      }
+      @Field()
+      async floatNullable(): Promise<number | null> {
         return 10
       }
     }
 
-    expect(() =>
-      compileObjectType(Foo).getFields()
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"@ObjectType Foo.bar: Field type was infered as \\"function Promise() { [native code] }\\" so it's required to explicitly set the type as it's not possible to guess it. Pass it in a config for the field like: @Field({ type: ItemType })"`
-    )
+    const { float, floatNullable } = compileObjectType(Foo).getFields()
+    expect(floatNullable.type.toJSON()).toBe('Float')
+    expect(float.type.toJSON()).toBe('Float!')
   })
 
   it('Properly resolves edge cases default values of fields', async () => {
     @ObjectType()
     class Foo {
       @Field()
+      // @ts-expect-error 3/21/2022
       undef: boolean = undefined
       @Field()
       falsy: boolean = false
       @Field()
       truthy: boolean = true
       @Field()
+      // @ts-expect-error 3/21/2022
       nully: boolean = null
       @Field()
       zero: number = 0
@@ -338,11 +400,17 @@ describe('Field', () => {
 
     const foo = new Foo()
 
+    // @ts-expect-error 3/21/2022
     expect(await undef.resolve(foo, {}, null, null)).toEqual(undefined)
+    // @ts-expect-error 3/21/2022
     expect(await falsy.resolve(foo, {}, null, null)).toEqual(false)
+    // @ts-expect-error 3/21/2022
     expect(await truthy.resolve(foo, {}, null, null)).toEqual(true)
+    // @ts-expect-error 3/21/2022
     expect(await nully.resolve(foo, {}, null, null)).toEqual(null)
+    // @ts-expect-error 3/21/2022
     expect(await zero.resolve(foo, {}, null, null)).toEqual(0)
+    // @ts-expect-error 3/21/2022
     expect(await maxInt.resolve(foo, {}, null, null)).toEqual(9007199254740991)
   })
 
@@ -365,7 +433,7 @@ describe('Field', () => {
     expect(() =>
       decorate2(Foo.prototype, 'bar')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Field \\"bar\\" on class Foo cannot be registered-it's already registered as type Number"`
+      `"Field \\"bar\\" on class Foo cannot be registered-it's already registered"`
     )
   })
 
@@ -383,43 +451,44 @@ describe('Field', () => {
         return this.baz
       }
 
-      @Field({ castTo: Foo })
+      @Field({ type: Foo })
       castedField() {
         return { baz: 'castedFromAField' }
       }
-      @Field({ castTo: () => Foo })
+      @Field({ type: () => Foo })
       castedFieldDefinedAsThunk() {
         return { baz: 'castedFromAField' }
       }
-      @Field({ castTo: Foo })
+      @Field({ type: Foo })
       castedFieldNullReturning(): Foo {
+        // @ts-expect-error 3/21/2022
         return null
       }
-      @Field({ castTo: Foo })
+      @Field({ type: Foo })
       castedFieldUndefinedReturning(): Foo {
-        return
+        return new Foo()
       }
 
-      @Field({ castTo: [Foo] })
+      @Field({ type: [Foo] })
       castedFieldAsArray() {
-        return [{ baz: 'castedFromAField1' }, { baz: 'castedFromAField2' }]
+        return [{ baz: 'castedFromAField11' }, { baz: 'castedFromAField21' }]
       }
 
-      @Field({ castTo: () => [Foo] })
+      @Field({ type: () => [Foo] })
       castedFieldAsArrayDefinedAsThunk() {
-        return [{ baz: 'castedFromAField1' }, { baz: 'castedFromAField2' }]
+        return [{ baz: 'castedFromAField12' }, { baz: 'castedFromAField22' }]
       }
 
-      @ArrayField({ itemCast: () => Foo })
+      @Field({ type: () => [Foo] })
       castedArrayFieldDefinedAsThunk() {
-        return [{ baz: 'castedFromAField1' }, { baz: 'castedFromAField2' }]
+        return [{ baz: 'castedFromAField13' }, { baz: 'castedFromAField23' }]
       }
 
-      @ArrayField({ itemCast: Foo })
+      @Field({ type: [Foo] })
       castedArrayField() {
-        return [{ baz: 'castedFromAField1' }, { baz: 'castedFromAField2' }]
+        return [{ baz: 'castedFromAField14' }, { baz: 'castedFromAField24' }]
       }
-      @Field({ castTo: [Foo] })
+      @Field({ type: [Foo] })
       castedFieldAsArrayWithBadReturnValue() {
         return [[{ baz: 'castedFromAField1' }]]
       }
@@ -427,7 +496,7 @@ describe('Field', () => {
 
     @SchemaRoot()
     class FooSchema {
-      @Query({ castTo: Foo })
+      @Query({ type: Foo })
       castedQuery() {
         return { baz: 'castedFromAQuery' }
       }
@@ -436,6 +505,51 @@ describe('Field', () => {
 
     it('should print as expected', async () => {
       expect(printSchema(schema)).toMatchSnapshot()
+    })
+
+    it('should cast POJO by default', async () => {
+      @ObjectType()
+      class FooChild {
+        @Field()
+        bazChild: string = 'bazChildResult'
+      }
+
+      @ObjectType()
+      class Foo {
+        @Field()
+        baz: string = 'baz'
+
+        @Field()
+        bar() {
+          return { bazChild: 'field bazChild test value' } as FooChild
+        }
+      }
+
+      @SchemaRoot()
+      class FooSchema {
+        @Query({ type: Foo })
+        castedQuery() {
+          return { baz: 'castedFromAQuery' }
+        }
+      }
+      const schema = compileSchema(FooSchema)
+
+      const result = await graphql({
+        schema,
+        source: `
+          {
+            castedQuery {
+              bar {
+                bazChild
+              }
+            
+            }
+          }
+        `
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data).toMatchSnapshot()
     })
 
     it('should register a field with castTo', async () => {
@@ -460,9 +574,7 @@ describe('Field', () => {
               castedFieldAsArrayDefinedAsThunk {
                 bar
               }
-              castedArrayFieldDefinedAsThunk {
-                bar
-              }
+ 
               castedArrayField {
                 bar
               }
@@ -472,45 +584,8 @@ describe('Field', () => {
       })
 
       expect(result.errors).toBeUndefined()
-      expect(result.data.castedQuery).toMatchInlineSnapshot(`
-        Object {
-          "bar": "castedFromAQuery",
-          "castedArrayField": Array [
-            Object {
-              "bar": "castedFromAField1",
-            },
-            Object {
-              "bar": "castedFromAField2",
-            },
-          ],
-          "castedArrayFieldDefinedAsThunk": Array [
-            Object {
-              "bar": "castedFromAField1",
-            },
-            Object {
-              "bar": "castedFromAField2",
-            },
-          ],
-          "castedField": Object {
-            "bar": "castedFromAField",
-          },
-          "castedFieldAsArrayDefinedAsThunk": Array [
-            Object {
-              "bar": "castedFromAField1",
-            },
-            Object {
-              "bar": "castedFromAField2",
-            },
-          ],
-          "castedFieldDefinedAsThunk": Object {
-            "bar": "castedFromAField",
-          },
-          "castedFieldNullReturning": null,
-          "castedFieldUndefinedReturning": null,
-        }
-      `)
+      expect(result.data?.castedQuery).toMatchSnapshot()
     })
-
     it('should be able to castTo an array of classes', async () => {
       const result = await graphql({
         schema,
@@ -527,21 +602,8 @@ describe('Field', () => {
       })
 
       expect(result.errors).toBeUndefined()
-      expect(result.data.castedQuery).toMatchInlineSnapshot(`
-        Object {
-          "bar": "castedFromAQuery",
-          "castedFieldAsArray": Array [
-            Object {
-              "bar": "castedFromAField1",
-            },
-            Object {
-              "bar": "castedFromAField2",
-            },
-          ],
-        }
-      `)
+      expect(result.data?.castedQuery).toMatchSnapshot()
     })
-
     it('throws when returning array of arrays with an array castTo', async () => {
       const result = await graphql({
         schema,
@@ -559,13 +621,10 @@ describe('Field', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "data": Object {
-            "castedQuery": Object {
-              "bar": "castedFromAQuery",
-              "castedFieldAsArrayWithBadReturnValue": null,
-            },
+            "castedQuery": null,
           },
           "errors": Array [
-            [GraphQLError: field "castedFieldAsArrayWithBadReturnValue" cannot be casted to object type Foo - returned value is an array],
+            [GraphQLError: Cannot return null for non-nullable field Foo.bar.],
           ],
         }
       `)

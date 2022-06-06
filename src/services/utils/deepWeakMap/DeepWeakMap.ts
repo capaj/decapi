@@ -1,6 +1,4 @@
-import { get, set } from 'object-path'
-
-export type DeepWeakMapPath = (string | number) | Array<string | number>
+export type DeepWeakMapPath = (string) | Array<string | number>
 
 function flattenPaths(paths: DeepWeakMapPath[]): string[] {
   return paths.reduce((accumulatedPath: string[], nextPath) => {
@@ -31,16 +29,35 @@ export class DeepWeakMap<
       const empty = {}
       map.set(target, empty as Structure)
     }
-    return map.get(target)
+    return map.get(target) as Structure
   }
 
   set(target: Key, path: DeepWeakMapPath, value: Value) {
-    set((this.getAll(target) as any) as object, path, value)
+    const metaData = this.getAll(target) as Record<string, any>
+    if (typeof path === 'string') {
+      metaData[path] = value
+    } else {
+      let onFirstPath = metaData[path[0]]
+      if (!onFirstPath) {
+        onFirstPath = []
+      }
+
+      onFirstPath[path[1]] = value
+      metaData[path[0]] = onFirstPath
+    }
   }
 
   get(target: Key, ...paths: DeepWeakMapPath[]): Value {
     const path = flattenPaths(paths)
-    return get((this.getAll(target) as any) as object, path)
+
+    const metaData = this.getAll(target) as Record<string, any>
+    if (path.length === 1) {
+      return metaData[path[0]]
+    } else {
+      const onFirstPath = metaData[path[0]]
+
+      return onFirstPath && onFirstPath[path[1]]
+    }
   }
 
   has(target: Key, ...paths: DeepWeakMapPath[]): boolean {

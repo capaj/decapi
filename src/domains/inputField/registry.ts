@@ -1,4 +1,4 @@
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
 
 export interface IAllRegisteredInputFields {
   [fieldName: string]: IFieldInputInnerConfig
@@ -16,5 +16,4 @@ export interface IFieldInputInnerConfig {
   property: string
   description?: string
   type?: any
-  isNullable?: boolean
 }

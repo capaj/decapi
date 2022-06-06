@@ -4,25 +4,13 @@ import {
   GraphQLOutputType,
   GraphQLNonNull
 } from 'graphql'
-import { FieldError } from '../Field'
+import { FieldError } from '../Field.js'
 
-import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType'
 import {
   mutationFieldsRegistry,
   isSchemaRoot,
   queryFieldsRegistry
-} from '../../schema/SchemaRoot'
-
-export function resolveRegisteredOrInferredType(
-  target: Function,
-  fieldName: string,
-  explicitType?: any
-) {
-  if (explicitType) {
-    return resolveTypeOrThrow(explicitType, target, fieldName)
-  }
-  return inferTypeOrThrow(target, fieldName)
-}
+} from '../../schema/SchemaRoot.js'
 
 export function validateResolvedType(
   target: Function,

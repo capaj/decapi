@@ -1,21 +1,20 @@
-import { inputFieldsRegistry, IFieldInputInnerConfig } from './registry'
+import { inputFieldsRegistry, IFieldInputInnerConfig } from './registry.js'
 
 export {
   IFieldInputInnerConfig as FieldInputInnerConfig,
   inputFieldsRegistry
-} from './registry'
+} from './registry.js'
 export {
   compileAllInputFields,
   compileInputFieldConfig
-} from './compiler/index'
-export { InputFieldError } from './error'
+} from './compiler/index.js'
+export { InputFieldError } from './error.js'
 
 export interface IInputFieldOptions {
   description?: string
   defaultValue?: any
   type?: any
   name?: string
-  isNullable?: boolean
 }
 
 export function InputField(options?: IInputFieldOptions): PropertyDecorator {
@@ -49,5 +48,5 @@ export function InputField(options?: IInputFieldOptions): PropertyDecorator {
 export function InputFieldNullable(
   options?: IInputFieldOptions
 ): PropertyDecorator {
-  return InputField({ ...options, isNullable: true })
+  return InputField(options)
 }

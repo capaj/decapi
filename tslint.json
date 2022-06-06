@@ -23,6 +23,6 @@
     "forin": false,
     "curly": [true, "ignore-same-line"],
     "array-type": [true, "array-simple"],
-    "cognitive-complexity": [true, 18]
+    "cognitive-complexity": { "severity": "warning" }
   }
 }

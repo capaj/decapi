@@ -1,9 +1,9 @@
 import { GraphQLEnumType } from 'graphql'
-import { EnumError } from './error'
+import { EnumError } from './error.js'
 
-import { enumsRegistry } from './registry'
-export { enumsRegistry } from './registry'
-import { convertNativeEnumToGraphQLEnumValues } from './convertNativeEnumToGraphQLEnumValues'
+import { enumsRegistry } from './registry.js'
+export { enumsRegistry } from './registry.js'
+import { convertNativeEnumToGraphQLEnumValues } from './convertNativeEnumToGraphQLEnumValues.js'
 
 export interface DescriptionOptions {
   description?: string

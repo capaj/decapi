@@ -8,10 +8,10 @@ import {
   Mutation,
   compileSchema,
   Query
-} from '../index'
+} from '../index.js'
 
 @InputObjectType()
-class Input {
+class BarType {
   @InputField()
   value: string
 }
@@ -33,7 +33,7 @@ class FooSchema {
   }
 
   @Query()
-  deepInput(input: Input): Hello {
+  deepInput(input: BarType): Hello {
     return new Hello(input.value)
   }
 }

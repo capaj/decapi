@@ -1,76 +1,82 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
-  GraphQLList,
-  GraphQLNonNull
-} from 'graphql'
-import { FieldError, fieldsRegistry } from '../Field'
+import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql'
+import { FieldError, fieldsRegistry } from '../Field.js'
 
-import { compileFieldResolver } from './resolver'
-import {
-  enhanceType,
-  isRootFieldOnNonRootBase,
-  resolveRegisteredOrInferredType,
-  validateResolvedType
-} from './services'
+import { compileFieldResolver } from './resolver.js'
+import { isRootFieldOnNonRootBase, validateResolvedType } from './services.js'
 
-import { validateNotInferableField } from './fieldType'
-import { compileFieldArgs } from '../../arg/ArgDecorators'
+import {
+  resolveTypeOrThrow,
+  throwIfNotInferableType,
+  validateNotInferableField
+} from './fieldType.js'
+import { compileFieldArgs } from '../../arg/ArgDecorators.js'
+import { Constructor } from 'typescript-rtti'
+import { resolveType } from '../../../services/utils/gql/types/typeResolvers.js'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget.js'
 
 export function compileFieldConfig(
-  target: Function,
+  target: Constructor<Function>,
   fieldName: string
 ): GraphQLFieldConfig<any, any, any> {
   const fieldRegistryConfig = fieldsRegistry.get(target, fieldName)
+
   const {
-    type,
     description,
-    isNullable,
-    itemNullable,
-    castTo,
-    itemCast,
+    type,
+    nullable: isNullable,
     onlyDecoratedArgs,
     deprecationReason
   } = fieldRegistryConfig
-  const args = compileFieldArgs(target, fieldName, onlyDecoratedArgs)
-  const arrayFieldType =
-    fieldRegistryConfig.itemType || fieldRegistryConfig.itemCast
 
-  const explicitType = arrayFieldType ? arrayFieldType : castTo ? castTo : type
+  const args = compileFieldArgs(target as any, fieldName, !!onlyDecoratedArgs)
 
-  const resolvedType = resolveRegisteredOrInferredType(
-    target,
-    fieldName,
-    explicitType
-  )
+  const inferredType = inferTypeByTarget(target.prototype, fieldName)
+  // console.log('~ inferredType', inferredType)
+
+  throwIfNotInferableType(inferredType, target, fieldName)
+
+  let gqlType
+  if (type) {
+    // console.log(fieldName, '~ isNullable', isNullable)
+
+    gqlType = resolveTypeOrThrow(
+      { runtimeType: type, isNullable: isNullable ?? inferredType.isNullable },
+      target,
+      fieldName
+    )
+  } else {
+    if (!inferredType.runtimeType) {
+      throw new FieldError(
+        target,
+        fieldName,
+        `Could not infer return type and no type is explicitly configured. In case of circular dependencies make sure to explicitly set a type.`
+      )
+    }
+    gqlType = resolveType(inferredType)
+  }
 
   // if was not able to resolve type, try to show some helpful information about it
-  if (!resolvedType && !validateNotInferableField(target, fieldName)) {
-    return
+  if (!gqlType && !validateNotInferableField(target, fieldName)) {
+    throw new Error('could not resolve type')
   }
 
   // show error about being not able to resolve field type
-  if (!validateResolvedType(target, fieldName, resolvedType)) {
+  if (!validateResolvedType(target, fieldName, gqlType)) {
     validateNotInferableField(target, fieldName)
-    return
   }
-
-  const finalType = arrayFieldType
-    ? new GraphQLNonNull(
-        new GraphQLList(enhanceType(resolvedType, itemNullable))
-      )
-    : enhanceType(resolvedType, isNullable)
 
   return {
     description,
-    type: finalType,
+    // @ts-expect-error
+    type: gqlType,
     deprecationReason,
-    resolve: compileFieldResolver(target, fieldName, castTo || itemCast),
+    resolve: compileFieldResolver(target, fieldName, type),
+    // @ts-expect-error
     args
   }
 }
 
-function getAllFields(target: Function) {
+function getAllFields(target: Constructor<Function>) {
   const fields = fieldsRegistry.getAll(target)
 
   const finalFieldsMap: GraphQLFieldConfigMap<any, any> = {}
@@ -90,11 +96,13 @@ function getAllFields(target: Function) {
   return finalFieldsMap
 }
 
-export function compileAllFields(targetWithParents: Function[]) {
+export function compileAllFields(
+  targetWithParents: Array<Constructor<Function>>
+) {
   const finalFieldsMap: GraphQLFieldConfigMap<any, any> = {}
 
   targetWithParents.forEach((targetLevel) => {
-    Object.assign(finalFieldsMap, getAllFields(targetLevel))
+    targetLevel && Object.assign(finalFieldsMap, getAllFields(targetLevel))
   })
 
   return finalFieldsMap

@@ -2,10 +2,10 @@
 
 exports[`Enums renders schema with an enum used in a query 1`] = `
 "type Query {
-  echoAsInferred(input: StateEnum!): String
+  echoAsInferred(input: StateEnum!): StateEnum
   echoAsEnum(input: StateEnum!): StateEnum
   echoAsEnum2(input: StateEnumUsingKeys!): StateEnumUsingKeys
-  intAsInferred(input: IntEnum!): Float
+  intAsInferred(input: IntEnum!): IntEnum
   intAsEnum(input: IntEnum!): IntEnum
 }
 

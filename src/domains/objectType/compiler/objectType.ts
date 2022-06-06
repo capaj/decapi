@@ -1,21 +1,22 @@
-import { GraphQLObjectType, GraphQLInterfaceType } from 'graphql'
+import { GraphQLObjectType } from 'graphql'
 import {
   ObjectTypeError,
   objectTypeRegistry,
   IObjectTypeOptions
-} from '../ObjectType'
+} from '../ObjectType.js'
 
-import { compileAllFields } from '../../field/Field'
+import { compileAllFields } from '../../field/Field.js'
 
-import { interfaceTypeRegistry } from '../../interfaceType/interfaceTypeRegistry'
-import { createCachedThunk } from '../../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../../services/utils/inheritance'
-import { Getter } from '../../../domains/schema/registry'
+import { interfaceTypeRegistry } from '../../interfaceType/interfaceTypeRegistry.js'
+import { createCachedThunk } from '../../../services/utils/cachedThunk.js'
+import { getClassWithAllParentClasses } from '../../../services/utils/getClassWithAllParentClasses.js'
+import { Getter } from '../../../domains/schema/registry.js'
+import { Constructor } from 'typescript-rtti'
 
 export const compileOutputTypeCache = new WeakMap<Function, GraphQLObjectType>()
 
 export function createTypeFieldsGetter(
-  target: Function,
+  target: Constructor<Function>,
   config: IObjectTypeOptions
 ) {
   let targetWithParents = getClassWithAllParentClasses(target)
@@ -49,33 +50,40 @@ export function createTypeFieldsGetter(
       targetWithParents = targetWithParents.concat(mixins())
     }
 
-    return compileAllFields(targetWithParents)
+    return compileAllFields(targetWithParents as Array<Constructor<Function>>)
   })
 }
 
 export function compileObjectTypeWithConfig(
-  target: Function,
+  target: Constructor<Function>,
   config: IObjectTypeOptions
 ): GraphQLObjectType {
-  if (compileOutputTypeCache.has(target)) {
-    return compileOutputTypeCache.get(target)
+  const cachedType = compileOutputTypeCache.get(target)
+
+  if (cachedType) {
+    return cachedType
   }
-  let interfaces: Array<Getter<GraphQLInterfaceType>> = null
-  if (config.implements) {
-    interfaces = config.implements.map((interfaceClass) => {
-      return interfaceTypeRegistry.get(interfaceClass)
-    })
-  }
+  const interfaces = config.implements?.map((interfaceClass) => {
+    const intfClass = interfaceTypeRegistry.get(interfaceClass)
+    if (!intfClass) {
+      throw new ObjectTypeError(
+        target,
+        `Interface ${interfaceClass.name} not found in interfaceTypeRegistry`
+      )
+    }
+    return intfClass
+  })
 
   const compiled = new GraphQLObjectType({
+    // @ts-expect-error
     interfaces: interfaces
       ? createCachedThunk(() => {
           return interfaces.map((intf) => intf())
         })
       : null,
-    name: config.name,
+    name: config.name ?? target.name,
     description: config.description,
-    isTypeOf: (value: any) => value instanceof target,
+    // isTypeOf: (value: any) => value instanceof target, // TODO double check that we don't need this
     fields: createTypeFieldsGetter(target, config)
   })
 
@@ -84,13 +92,15 @@ export function compileObjectTypeWithConfig(
 }
 
 export function compileObjectType(target: Function) {
-  if (!objectTypeRegistry.has(target)) {
+  const compiler = objectTypeRegistry.get(target) as Getter<
+    GraphQLObjectType<any, any>
+  >
+  if (!compiler) {
     throw new ObjectTypeError(
       target,
       `Class is not registered. Make sure it's decorated with @ObjectType decorator`
     )
   }
 
-  const compiler = objectTypeRegistry.get(target)
   return compiler()
 }

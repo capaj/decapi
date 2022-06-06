@@ -1,39 +1,36 @@
-import { fieldsRegistry, IFieldInnerConfig } from '../field/registry'
+import { IFieldOptions } from '../field/Field.js'
+import { fieldsRegistry, IFieldInnerConfig } from '../field/registry.js'
 import {
   inputFieldsRegistry,
   IFieldInputInnerConfig
-} from '../inputField/registry'
-import { IArrayFieldOptions } from '../field/Field'
+} from '../inputField/registry.js'
 
-export { FieldError } from './error'
+export { FieldError } from './error.js'
 
-interface IDuplexFieldOptions extends IArrayFieldOptions { 
+interface IDuplexFieldOptions extends IFieldOptions {
   inputNullable?: boolean
-  itemType?: any,
   itemCast?: any
 }
 
-export function DuplexField(
-  options?: IDuplexFieldOptions 
-): PropertyDecorator {
+export function DuplexField(options?: IDuplexFieldOptions): PropertyDecorator {
   return (targetInstance: Object, fieldName: string) => {
     let isNullable = true
     let inputNullable = true
     if (options) {
-      if (options.isNullable !== undefined) {
-        isNullable = options.isNullable
+      if (options.nullable !== undefined) {
+        isNullable = options.nullable
       }
       if (options.inputNullable !== undefined) {
         inputNullable = options.inputNullable
       }
-      delete options.isNullable
+      delete options.nullable
       delete options.inputNullable
     }
 
-    let type = options?.type
-    if (options?.itemType || options?.itemCast) {
-      type = [options.itemType ?? options.itemCast]
-    } 
+    let type
+    if (options?.itemCast) {
+      type = [options.itemCast]
+    }
 
     const finalInputConfig: IFieldInputInnerConfig = {
       property: fieldName,
@@ -57,17 +54,4 @@ export function DuplexField(
       finalInputConfig
     )
   }
-}
-
-export function DuplexArrayField(
-  options?: IArrayFieldOptions
-): PropertyDecorator {
-  const typeOrCastTo = options ? options.itemType || options.itemCast : null
-
-  if (!typeOrCastTo) {
-    throw new TypeError(
-      'ArrayField must have an explicit itemType or itemCast config'
-    )
-  }
-  return DuplexField(options)
 }

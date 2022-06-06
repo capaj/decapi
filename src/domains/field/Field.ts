@@ -1,13 +1,16 @@
-import { fieldsRegistry, IFieldInnerConfig } from './registry'
-import { rootFieldTypes } from '../schema/rootFields'
+import { fieldsRegistry, IFieldInnerConfig } from './registry.js'
+import { rootFieldTypes } from '../schema/rootFields.js'
 
 export {
-  IFieldInnerConfig as FieldInnerConfig,
+  IFieldInnerConfig,
   fieldsRegistry,
   queryFieldsRegistry
-} from './registry'
-export { compileAllFields, compileFieldConfig } from './compiler/fieldCompiler'
-export { FieldError } from './error'
+} from './registry.js'
+export {
+  compileAllFields,
+  compileFieldConfig
+} from './compiler/fieldCompiler.js'
+export { FieldError } from './error.js'
 
 export interface IFieldOptionsBase {
   description?: string
@@ -18,30 +21,29 @@ export interface IFieldOptionsBase {
 }
 
 export interface IFieldOptions extends IFieldOptionsBase {
-  isNullable?: boolean
+  nullable?: boolean
   itemNullable?: boolean
   type?: any
-  castTo?: any
   deprecationReason?: string
 }
 
-export interface IArrayFieldOptions extends IFieldOptions {
-  itemType?: any
-  itemCast?: any
-  itemNullable?: boolean
-}
-
-export function Field(
-  options?: IFieldOptions | IArrayFieldOptions
-): PropertyDecorator {
+export function Field(options?: IFieldOptions): PropertyDecorator {
   return (targetInstance: Object, fieldName: string) => {
+    const getter = Object.getOwnPropertyDescriptor(
+      targetInstance,
+      fieldName
+    )?.get
+
+    if (getter) {
+      throw new Error('Field cannot be on a getter')
+    }
     if (
       options &&
       options.hasOwnProperty('type') &&
-      (options as IFieldOptions).type === undefined
+      options.type === undefined
     ) {
       console.log(
-        'This usually happens when a circular dependency is present. Wrap your explicit type in an arrow function to avoid this problem.'
+        'This usually happens when a circular dependency is present. Wrap your explicit castTo in an arrow function to avoid this problem.'
       )
       throw new TypeError(
         `Field "${fieldName}" on ${targetInstance.constructor} got an "undefined" as explicit type`
@@ -50,7 +52,6 @@ export function Field(
     const finalConfig: IFieldInnerConfig = {
       property: fieldName,
       name: fieldName,
-      isNullable: true,
       ...options
     }
     const existingField = fieldsRegistry.get(
@@ -59,12 +60,12 @@ export function Field(
     )
 
     if (existingField) {
-      if (!options.rootFieldType) {
+      if (!options?.rootFieldType) {
         throw new TypeError(
-          `Field "${fieldName}" on class ${targetInstance.constructor.name} cannot be registered-it's already registered as type ${existingField.type.name}`
+          `Field "${fieldName}" on class ${targetInstance.constructor.name} cannot be registered-it's already registered`
         )
       }
-      if (options.rootFieldType === existingField.rootFieldType) {
+      if (options?.rootFieldType === existingField.rootFieldType) {
         throw new TypeError(
           `Root field "${fieldName}" on schema class ${targetInstance.constructor.name} cannot be registered as a ${existingField.rootFieldType}-it's already registered`
         )
@@ -73,19 +74,4 @@ export function Field(
 
     fieldsRegistry.set(targetInstance.constructor, fieldName, finalConfig)
   }
-}
-
-/**
- * alias to help define array returning resolvers less verbosely and to enforce convention of arrays being not nullable
- * in real world scenarios you always want the array to be non nullable
- */
-export function ArrayField(options?: IArrayFieldOptions): PropertyDecorator {
-  const typeOrCastTo = options ? options.itemType || options.itemCast : null
-
-  if (!typeOrCastTo) {
-    throw new TypeError(
-      'ArrayField must have an explicit itemType or itemCast config'
-    )
-  }
-  return Field(options)
 }

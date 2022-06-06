@@ -1,10 +1,10 @@
-import { injectorRegistry, InjectorResolver } from './registry'
+import { injectorRegistry, InjectorResolver } from './registry.js'
 export {
   injectorRegistry,
   IInjectorsIndex as InjectorsIndex,
   InjectorResolver,
   IInjectorResolverData as InjectorResolverData
-} from './registry'
+} from './registry.js'
 
 export function Inject(resolver: InjectorResolver): ParameterDecorator {
   return (target: Object, fieldName: string, argIndex: number) => {

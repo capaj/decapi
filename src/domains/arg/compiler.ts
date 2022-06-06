@@ -1,92 +1,36 @@
 import {
   GraphQLFieldConfigArgumentMap,
   GraphQLInputType,
-  isInputType,
+  GraphQLList,
   GraphQLNonNull
 } from 'graphql'
 
-import { IArgsIndex, argRegistry } from './registry'
-import { ArgError } from './error'
-import { defaultArgOptions } from './options'
+import { IArgsIndex, argRegistry } from './registry.js'
+
 import 'reflect-metadata'
 
-import { injectorRegistry } from '../inject/Inject'
+import { injectorRegistry } from '../inject/Inject.js'
 
-import { getParameterNames } from '../../services/utils/getParameterNames'
-import { resolveType } from '../../services/utils/gql/types/typeResolvers'
+import { Constructor, reflect } from 'typescript-rtti'
+import {
+  inferTypeFromRtti,
+  isParsableScalar,
+  mapNativeScalarToGraphQL,
+  mapNativeTypeToGraphQL
+} from '../../services/utils/gql/types/inferTypeByTarget.js'
+import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
+import { inputObjectTypeRegistry } from '../inputObjectType/registry.js'
+import { enumsRegistry } from '../enum/registry.js'
 
-function compileInferredAndRegisteredArgs(
-  inferred: any[],
-  registeredArgs: IArgsIndex = [],
-  onlyDecoratedArgs: boolean
-) {
-  return inferred
-    .map((inferredType, index) => {
-      const registered = registeredArgs[index]
-      if (registered && registered.type) {
-        return registered.type
-      }
-      if (!registered && onlyDecoratedArgs) {
-        return null // no need to get the type as it is not decorated
-      }
-      return inferredType
-    })
-    .map((argType) => {
-      return resolveType(argType, true, true)
-    })
+export interface ITargetAndField {
+  target: Constructor<Function>
+  fieldName: string
 }
 
-export interface ICompileArgContextType {
-  target: Function
-  fieldName: string
-  argumentTypes: GraphQLInputType[]
+export interface ICompileArgContextType extends ITargetAndField {
+  argumentTypes: Array<GraphQLInputType | null>
   registeredArgs: IArgsIndex
   onlyDecoratedArgs: boolean
-}
-
-function validateArgs(ctx: ICompileArgContextType) {
-  const { target, fieldName, argumentTypes, onlyDecoratedArgs } = ctx
-  argumentTypes.forEach((argType, argIndex) => {
-    const isInjectedArg = injectorRegistry.has(target, fieldName, argIndex)
-    const isDecorated = argRegistry.has(target, fieldName, argIndex)
-
-    if (!isInjectedArg) {
-      if (!argType) {
-        if (!isDecorated && onlyDecoratedArgs) {
-          return
-        }
-        throw new ArgError(
-          ctx,
-          argIndex,
-          `Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar like 'String' or class decorated with @InputObjectType`
-        )
-      }
-
-      if (!isInputType(argType)) {
-        throw new ArgError(
-          ctx,
-          argIndex,
-          `Argument has incorrect type. Make sure to use native GraphQLInputType, native scalar like 'String' or class decorated with @InputObjectType`
-        )
-      }
-    }
-
-    if (isInjectedArg && isDecorated) {
-      throw new ArgError(
-        ctx,
-        argIndex,
-        `Argument cannot be marked wiht both @Arg and @Inject or custom injector`
-      )
-    }
-  })
-}
-
-function enhanceType(originalType: GraphQLInputType, isNullable: boolean) {
-  let finalType = originalType
-  if (!isNullable) {
-    finalType = new GraphQLNonNull(finalType)
-  }
-  return finalType
 }
 
 function convertArgsArrayToArgsMap({
@@ -106,8 +50,7 @@ function convertArgsArrayToArgsMap({
     return {}
   }
 
-  const functionDefinition = target.prototype[fieldName]
-  const argNames = getParameterNames(functionDefinition)
+  const argNames = reflect(target).getOwnMethod(fieldName).parameterNames
 
   if (!argNames || !argNames.length) {
     return {}
@@ -121,22 +64,22 @@ function convertArgsArrayToArgsMap({
     if (onlyDecoratedArgs && !registeredArgConfig) {
       return
     }
-    const argConfig = registeredArgConfig || { ...defaultArgOptions }
+    const argConfig = registeredArgConfig || {}
 
     if (argConfig.name) {
       argName = argConfig.name
     }
-    const argType: GraphQLInputType = argumentTypes[index]
-
+    const argType = argumentTypes[index]
+    if (!argType) {
+      return
+    }
     // don't publish args marked as auto Injected
-    if (injectorRegistry.has(target, fieldName, index)) {
+    if (injectorRegistry.has(target, fieldName, index.toString())) {
       return
     }
 
-    const finalType = enhanceType(argType, argConfig.isNullable)
-
     argsMap[argName] = {
-      type: finalType,
+      type: argType,
       description: argConfig.description
     }
   })
@@ -145,42 +88,97 @@ function convertArgsArrayToArgsMap({
 }
 
 export function compileFieldArgs(
-  target: Function,
+  target: Constructor<Function>,
   fieldName: string,
   onlyDecoratedArgs: boolean
-): GraphQLFieldConfigArgumentMap {
-  const registeredArgs = argRegistry.getAll(target)[fieldName]
-
-  let inferedRawArgs = Reflect.getMetadata(
-    'design:paramtypes',
+): GraphQLFieldConfigArgumentMap | null {
+  const getter = Object.getOwnPropertyDescriptor(
     target.prototype,
     fieldName
-  )
+  )?.get
 
-  // There are no arguments
-  if (!inferedRawArgs) {
-    if (!registeredArgs) {
-      return {}
+  if (getter) {
+    return null
+  }
+
+  const registeredArgs = argRegistry.getAll(target)[fieldName]
+
+  const injectedArgs = injectorRegistry.getAll(target)[fieldName]
+  const reflected = reflect(target)
+  const methodRtti = reflected.getOwnMethod(fieldName)
+  if (!methodRtti) {
+    return null
+  }
+  const args = methodRtti.parameterTypes
+
+  const argumentTypes: Array<GraphQLInputType | null> = []
+
+  for (let index = 0; index < args.length; index++) {
+    const registeredArgConfig = registeredArgs && registeredArgs[index]
+    const rtti = args[index]
+
+    if (injectedArgs && injectedArgs[index]) {
+      argumentTypes[index] = null
+    } else if (registeredArgConfig?.type) {
+      const { isNullable } = inferTypeFromRtti(rtti)
+
+      // @ts-expect-error
+      argumentTypes[index] = resolveType({
+        runtimeType: registeredArgConfig.type,
+        allowThunk: true,
+        isArgument: true,
+        isNullable: registeredArgConfig.nullable || isNullable
+      })
+    } else if (onlyDecoratedArgs && !registeredArgConfig) {
+      argumentTypes[index] = null
     } else {
-      // we didn't infer anything, but there were some registered at runtime
-      inferedRawArgs = registeredArgs
+      const { runtimeType, isNullable } = inferTypeFromRtti(rtti)
+      if (runtimeType === undefined) {
+        throw new Error(
+          `Argument ${target.name}.${fieldName}[${index}]: Could not infer type of argument. Make sure you are using a type which works as graphql input type.`
+          // {
+          //   target,
+          //   fieldName
+          // },
+          // index
+        )
+      }
+
+      argumentTypes[index] = mapNativeTypeToGraphQL(runtimeType)
+
+      const isArrayType = Array.isArray(runtimeType)
+      const IOTCompile = inputObjectTypeRegistry.get(
+        isArrayType ? runtimeType[0] : runtimeType
+      )
+
+      let gqlType: any
+      if (enumsRegistry.has(runtimeType)) {
+        gqlType = enumsRegistry.get(runtimeType)
+      } else if (isParsableScalar(runtimeType)) {
+        gqlType = mapNativeScalarToGraphQL(runtimeType)
+      } else if (IOTCompile) {
+        gqlType = isArrayType
+          ? new GraphQLList(
+              isNullable ? IOTCompile() : new GraphQLNonNull(IOTCompile())
+            )
+          : IOTCompile()
+      }
+
+      if (!gqlType) {
+        // console.warn(runtimeType)
+        throw new Error(
+          `Argument ${target.name}.${fieldName}[${index}]: Could not resolve type of argument. Make sure you are using a type which works as graphql input type.`
+        )
+      }
+
+      gqlType = isNullable ? gqlType : new GraphQLNonNull(gqlType)
+      argumentTypes[index] = gqlType
+      argRegistry.set(target, [fieldName, index], {
+        ...registeredArgConfig,
+        type: runtimeType,
+        argIndex: index
+      })
     }
-  }
-  if (registeredArgs && inferedRawArgs.length < registeredArgs.length) {
-    // we did infer some arguments, but some more were registered at runtime, so we ignore inferred
-    // as we can't be sure which are which
-    inferedRawArgs = registeredArgs
-  }
-  let argumentTypes: GraphQLInputType[]
-  try {
-    argumentTypes = (compileInferredAndRegisteredArgs(
-      inferedRawArgs,
-      registeredArgs,
-      onlyDecoratedArgs
-    ) as any) as GraphQLInputType[]
-  } catch (err) {
-    err.message = `Field ${fieldName} on ${target} failed to compile arguments: ${err.message}`
-    throw err
   }
 
   const compileFieldArgContext = {
@@ -191,7 +189,9 @@ export function compileFieldArgs(
     onlyDecoratedArgs
   }
 
-  validateArgs(compileFieldArgContext)
-
   return convertArgsArrayToArgsMap(compileFieldArgContext)
 }
+
+// const isArgNullable = (rtti) => {
+//   if()
+// }

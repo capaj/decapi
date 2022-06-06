@@ -1,7 +1,6 @@
 lib/specs
 **/*.spec.js
 **/*.spec.js.map
-src
 docs
 examples
 .rpt2_cache

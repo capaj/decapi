@@ -4,24 +4,26 @@ import {
   HookExecutor,
   fieldBeforeHooksRegistry,
   fieldAfterHooksRegistry
-} from '../../hooks/hooks'
-import { isSchemaRoot, getSchemaRootInstance } from '../../schema/SchemaRoot'
+} from '../../hooks/hooks.js'
+import { isSchemaRoot, getSchemaRootInstance } from '../../schema/SchemaRoot.js'
 
 import {
   injectorRegistry,
   InjectorResolver,
   InjectorsIndex
-} from '../../inject/Inject'
-import { argRegistry, IArgInnerConfig } from '../../arg/registry'
-import { getParameterNames } from '../../../services/utils/getParameterNames'
-import { plainToClass } from 'class-transformer'
+} from '../../inject/Inject.js'
+import { argRegistry, IArgInnerConfig } from '../../arg/registry.js'
+
+import { plainToInstance } from 'class-transformer'
 import {
   isParsableScalar,
   ParsableScalar
-} from '../../../services/utils/gql/types/parseNative'
-import { IInjectorResolverData } from '../../../domains/inject/registry'
-import { AfterHookExecutor } from '../../../domains/hooks/registry'
-import isPromiseLike from '../../../isPromiseLike'
+} from '../../../services/utils/gql/types/inferTypeByTarget.js'
+import { IInjectorResolverData } from '../../../domains/inject/registry.js'
+import { AfterHookExecutor } from '../../../domains/hooks/registry.js'
+import isPromiseLike from '../../../isPromiseLike.js'
+import { Constructor, reflect } from 'typescript-rtti'
+import { interfaceTypeRegistry } from '../../../domains/interfaceType/interfaceTypeRegistry.js'
 
 interface IArgsMap {
   [argName: string]: any
@@ -29,7 +31,6 @@ interface IArgsMap {
 
 interface IComputeArgsOptions {
   args: IArgsMap
-  reflectedParamTypes: any[] | null
   injectors: InjectorsIndex
   injectorToValueMapper: (injector: InjectorResolver) => any
   getArgConfig: (index: number) => IArgInnerConfig
@@ -103,15 +104,10 @@ function resolveReflectedArgument(
 
 export function computeFinalArgs(
   func: Function,
-  {
-    args,
-    injectors,
-    injectorToValueMapper,
-    getArgConfig,
-    reflectedParamTypes
-  }: IComputeArgsOptions
+  { args, injectors, injectorToValueMapper, getArgConfig }: IComputeArgsOptions
 ) {
-  const paramNames = getParameterNames(func)
+  const paramNames = reflect(func).parameterNames
+
   return paramNames.map((paramName, index) => {
     const argConfig = getArgConfig(index)
 
@@ -120,7 +116,7 @@ export function computeFinalArgs(
       if (argValue === null) {
         return argValue
       }
-      const reflectedType = reflectedParamTypes && reflectedParamTypes[index]
+      const reflectedType = argConfig.inferredType
 
       if (argConfig && argConfig.type) {
         return resolveExplicitArgument(argConfig, argValue)
@@ -131,7 +127,7 @@ export function computeFinalArgs(
       }
     }
 
-    if (argConfig) {
+    if (argConfig?.name) {
       return args[argConfig.name]
     }
 
@@ -160,17 +156,21 @@ function getFieldOfTarget(instance: any, prototype: any, fieldName: string) {
 }
 
 export function compileFieldResolver(
-  target: Function,
+  target: Constructor<Function>,
   fieldName: string,
   castTo?: any
 ): GraphQLFieldResolver<any, any> {
   function castIfNeeded(result: any) {
     if (castTo && result !== null && typeof result === 'object') {
-      if (castTo.name === 'castTo' || castTo.name === 'itemCast') {
+      if (castTo.name === 'type') {
         // this function is a thunk, so we get the type now
         castTo = castTo()
       }
+
       if (Array.isArray(castTo)) {
+        if (interfaceTypeRegistry.has(castTo[0])) {
+          return result
+        }
         if (!Array.isArray(result)) {
           throw new TypeError(
             `field ${fieldName} castTo is an array, yet it resolves with ${result} which is ${typeof result}`
@@ -183,10 +183,13 @@ export function compileFieldResolver(
               `field "${fieldName}" cannot be casted to object type ${castTo[0].name} - returned value is an array`
             )
           }
-          return plainToClass(castTo[0], item)
+          return plainToInstance(castTo[0], item)
         })
       } else {
-        return plainToClass(castTo, result)
+        if (interfaceTypeRegistry.has(castTo)) {
+          return result
+        }
+        return plainToInstance(castTo, result)
       }
     }
     return result
@@ -218,7 +221,7 @@ export function compileFieldResolver(
 
     let resolvedValue
     if (typeof instanceField !== 'function') {
-      resolvedValue = castIfNeeded(instanceField)
+      resolvedValue = castIfNeeded(instanceField) // TODO double check if we need to do this. Previously this was needed for methods too
       if (afterHooks) {
         await performAfterHooksExecution(
           afterHooks,
@@ -233,11 +236,7 @@ export function compileFieldResolver(
 
     const params = computeFinalArgs(instanceFieldFunc, {
       args: args || {},
-      reflectedParamTypes: Reflect.getMetadata(
-        'design:paramtypes',
-        target.prototype,
-        fieldName
-      ),
+      // reflectedParamTypes: reflect(target).getMethod(fieldName).parameterTypes,
       injectors: injectors || {},
       injectorToValueMapper: (injector) =>
         injector.apply(source, [{ source, args, context, info }]),
@@ -250,7 +249,6 @@ export function compileFieldResolver(
     resolvedValue = isPromiseLike(promiseOrValue)
       ? await promiseOrValue
       : promiseOrValue
-    resolvedValue = castIfNeeded(resolvedValue)
 
     if (afterHooks) {
       await performAfterHooksExecution(afterHooks, injectorData, resolvedValue)

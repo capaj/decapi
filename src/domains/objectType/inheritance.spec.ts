@@ -1,12 +1,12 @@
 import { GraphQLString, GraphQLNonNull } from 'graphql'
 import { ObjectType, Field, compileObjectType } from '../..'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance/index'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 describe('Type inheritance', () => {
   it('Will pass fields from parent class', () => {
     class Base {
       @Field()
-      baseField: string
+      baseField: string | null
     }
 
     @ObjectType()
@@ -18,16 +18,17 @@ describe('Type inheritance', () => {
   })
 
   it('Will overwrite fields in child class', () => {
+    @ObjectType()
     class Base {
       @Field()
-      foo: string
+      foo: string | null
       @Field()
-      bar: string
+      bar: string | null | undefined
     }
 
     @ObjectType()
     class Foo extends Base {
-      @Field({ isNullable: false })
+      @Field()
       foo: string
     }
 

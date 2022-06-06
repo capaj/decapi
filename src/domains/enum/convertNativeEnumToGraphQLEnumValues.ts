@@ -1,5 +1,5 @@
 import { GraphQLEnumValueConfigMap } from 'graphql'
-import { EnumFieldsConfig } from './registerEnum'
+import { EnumFieldsConfig } from './registerEnum.js'
 
 function validateForGraphqlJs(val: string) {
   if (!val.match(/^[_a-zA-Z][_a-zA-Z0-9]*$/)) {

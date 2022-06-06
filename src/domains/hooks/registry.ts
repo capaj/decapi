@@ -1,6 +1,6 @@
-import { HookError } from './error'
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
-import { IInjectorResolverData } from '../inject/registry'
+import { HookError } from './error.js'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
+import { IInjectorResolverData } from '../inject/registry.js'
 
 export type AfterHookExecutor<Result = any> = (
   resolvedValue: any,

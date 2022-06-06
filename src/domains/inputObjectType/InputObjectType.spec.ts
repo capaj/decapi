@@ -1,8 +1,8 @@
 import { GraphQLObjectType } from 'graphql'
 import { ObjectType, compileObjectType, Field } from '../..'
 
-import { InputObjectType } from './InputObjectType'
-import { InputField } from '../inputField/InputFieldDecorators'
+import { InputObjectType } from './InputObjectType.js'
+import { InputField } from '../inputField/InputFieldDecorators.js'
 
 describe('InputObjectType', () => {
   it('Throws when trying to compile type without @ObjectType decorator', () => {
@@ -35,7 +35,7 @@ describe('InputObjectType', () => {
     try {
       @InputObjectType()
       class Foo {
-        @InputField({ type: undefined, isNullable: false })
+        @InputField({ type: undefined })
         asEnum: string
       }
 

@@ -9,11 +9,11 @@ import {
   InputObjectType,
   InputField,
   Mutation
-} from '../index'
+} from '../index.js'
 import { GraphQLDateTime } from 'graphql-scalars'
 
 @InputObjectType()
-class Input {
+class MyInput {
   @InputField()
   inputField: string
 
@@ -25,11 +25,11 @@ class Input {
 @ObjectType()
 class Hello {
   @Field()
-  bar(@Arg() input: Input): string {
+  bar(@Arg() input: MyInput): string {
     return input.someMethodOnInputObjectType()
   }
   @Field()
-  barWithList(@Arg({ type: [Input] }) inputs: Input[]): string {
+  barWithList(@Arg({ type: [MyInput] }) inputs: MyInput[]): string {
     return inputs
       .map((input) => {
         return input.someMethodOnInputObjectType()
@@ -46,13 +46,13 @@ class FooSchema {
   }
 
   @Mutation()
-  barMutation(@Arg({ type: Input }) input: Input): string {
+  barMutation(@Arg({ type: MyInput }) input: MyInput): string {
     return input.someMethodOnInputObjectType()
   }
 
   @Query()
   withScalar(
-    @Arg({ type: GraphQLDateTime, isNullable: true }) aDate: Date
+    @Arg({ type: GraphQLDateTime, nullable: true }) aDate: Date
   ): number {
     return aDate.getTime()
   }

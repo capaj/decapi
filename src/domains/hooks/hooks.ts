@@ -3,14 +3,14 @@ import {
   registerFieldBeforeHook,
   HookExecutor,
   AfterHookExecutor
-} from './registry'
+} from './registry.js'
 
 export {
   fieldAfterHooksRegistry,
   fieldBeforeHooksRegistry,
   HookExecutor
-} from './registry'
-export { HookError } from './error'
+} from './registry.js'
+export { HookError } from './error.js'
 
 export function Before(hook: HookExecutor): PropertyDecorator {
   return (targetInstance: Object, fieldName: string) => {

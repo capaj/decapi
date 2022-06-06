@@ -1,9 +1,10 @@
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
 
 export interface IArgInnerConfig {
   description?: string
-  isNullable?: boolean
+  nullable?: boolean
   type?: any
+  inferredType?: any
   name?: string
   argIndex: number
 }

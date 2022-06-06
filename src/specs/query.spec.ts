@@ -1,11 +1,22 @@
-import { graphql } from 'graphql'
-import { compileSchema, ObjectType, Field, SchemaRoot, Query } from '../index'
+import { graphql, GraphQLSchema, printSchema } from 'graphql'
+import {
+  compileSchema,
+  ObjectType,
+  Field,
+  SchemaRoot,
+  Query
+} from '../index.js'
 
 @ObjectType()
 class Hello {
   @Field()
   world(name: string): string {
     return `Hello, ${name}`
+  }
+
+  @Field()
+  categories(): Promise<string[]> {
+    return Promise.resolve(['Tables', 'Furniture'])
   }
 }
 
@@ -22,9 +33,13 @@ class FooSchema {
   }
 }
 
-const schema = compileSchema(FooSchema)
-
 describe('Query', () => {
+  let schema: GraphQLSchema
+  it('should compile', () => {
+    schema = compileSchema(FooSchema)
+    expect(printSchema(schema)).toMatchSnapshot()
+  })
+
   it('should support queries with simple arguments', async () => {
     const result = await graphql({
       schema,
@@ -32,12 +47,13 @@ describe('Query', () => {
         {
           hello {
             world(name: "Bob")
+            categories
           }
         }
       `
     })
 
-    expect(result).toEqual({ data: { hello: { world: 'Hello, Bob' } } })
+    expect(result).toMatchSnapshot()
   })
 
   it('should not allow wrong argument types', async () => {

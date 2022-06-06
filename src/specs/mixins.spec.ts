@@ -7,7 +7,7 @@ import {
   Query,
   compileSchema,
   interfaceClassesSet
-} from '../index'
+} from '../index.js'
 
 interface IHasMyProp {
   myProp: number
@@ -141,12 +141,10 @@ describe('Query a mixin method', () => {
       }
     }
 
-    let schemaCompiled
-    expect(() => {
-      mixinSimulatedAsCircularDep = Mixin
+    const schemaCompiled = compileSchema(FooSchema)
 
-      schemaCompiled = compileSchema(FooSchema)
-    }).not.toThrow()
+    mixinSimulatedAsCircularDep = Mixin
+
     expect(printSchema(schemaCompiled)).toMatchSnapshot()
   })
 })

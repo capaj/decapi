@@ -7,7 +7,7 @@ import {
   SchemaRoot,
   Query,
   compileSchema,
-  ArgNullable
+  Arg
 } from '../..'
 
 describe('Arguments', () => {
@@ -38,7 +38,7 @@ describe('Arguments', () => {
     expect(() =>
       compileObjectType(Foo).getFields()
     ).toThrowErrorMatchingInlineSnapshot(
-      `"@Type Foo.bar(baz <-------): Could not infer type of argument. Make sure to use native GraphQLInputType, native scalar like 'String' or class decorated with @InputObjectType"`
+      `"Argument Foo.bar[0]: Could not infer type of argument. Make sure you are using a type which works as graphql input type."`
     )
   })
 
@@ -74,10 +74,10 @@ describe('Arguments', () => {
     @ObjectType()
     class Foo {
       @Field()
-      dateField(@ArgNullable({ type: Date }) date?: Date): Date {
+      dateField(@Arg({ type: Date }) date?: Date | null): Date | undefined {
         expect(date instanceof Date).toBeTruthy()
 
-        return date
+        return date!
       }
     }
     const { dateField } = compileObjectType(Foo).getFields()
@@ -90,7 +90,7 @@ describe('Arguments', () => {
 
     @SchemaRoot()
     class FooSchema {
-      @Query({ castTo: Foo })
+      @Query({ type: Foo })
       foo() {
         return {}
       }

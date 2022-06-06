@@ -1,24 +1,23 @@
 import { printSchema } from 'graphql'
-import { DuplexObjectType, SchemaRoot, compileSchema } from '../index'
+import { DuplexObjectType, SchemaRoot, compileSchema, Arg } from '../index'
 
-import { ArgNullable } from './arg/ArgDecorators'
 import { QueryAndMutation } from './schema/rootFields'
 
 import { InputFieldNullable } from './inputField/InputFieldDecorators'
-import { DuplexArrayField, DuplexField } from './duplexField/DuplexField'
-import { ArrayField } from './field/Field'
+import { DuplexField } from './duplexField/DuplexField'
+import { Field } from './field/Field'
 
 describe('decorator aliases', () => {
-  it.only('should compile', async () => {
+  it('should compile', async () => {
     @DuplexObjectType()
     class Bar {
       @InputFieldNullable()
       foo2: string
       @DuplexField()
-      foo(@ArgNullable() a: string): string {
-        return a
+      foo(@Arg() a: string | null): string {
+        return a!
       }
-      @DuplexArrayField({ itemType: String})
+      @DuplexField()
       duplexArrayOfString: Array<string | null>
     }
 
@@ -29,7 +28,7 @@ describe('decorator aliases', () => {
         return new Bar()
       }
       @QueryAndMutation()
-      echo(input: Bar): Bar {
+      echo(input: Bar | null): Bar {
         return new Bar()
       }
     }
@@ -37,33 +36,31 @@ describe('decorator aliases', () => {
     expect(printSchema(schema)).toMatchSnapshot()
   })
 
-  describe('ArrayField', () => {
-    it('should define the field correctly', async () => {
-      @DuplexObjectType()
-      class Bar {
-        @ArrayField({ itemType: String })
-        foo2: string
-        @ArrayField({ itemType: String, itemNullable: true })
-        foo4: string
-        @ArrayField({ itemType: () => String })
-        foo(@ArgNullable() a: string): string[] {
-          return []
-        }
-        @ArrayField({ itemType: Number })
-        foo3() {
-          return [1, 2, 3]
-        }
+  it('should define the fields with array types correctly', async () => {
+    @DuplexObjectType()
+    class Bar {
+      @Field()
+      foo2: Array<string>
+      @Field()
+      foo4: Array<string | null>
+      @Field({ type: () => [String] })
+      foo(@Arg() a: string): string[] {
+        return []
       }
+      @Field({ type: () => [Number] })
+      foo3() {
+        return [1, 2, 3]
+      }
+    }
 
-      @SchemaRoot()
-      class FooSchema {
-        @QueryAndMutation()
-        output(): Bar {
-          return new Bar()
-        }
+    @SchemaRoot()
+    class FooSchema {
+      @QueryAndMutation()
+      output(): Bar {
+        return new Bar()
       }
-      const schema = compileSchema(FooSchema)
-      expect(printSchema(schema)).toMatchSnapshot()
-    })
+    }
+    const schema = compileSchema(FooSchema)
+    expect(printSchema(schema)).toMatchSnapshot()
   })
 })

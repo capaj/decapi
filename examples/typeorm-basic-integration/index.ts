@@ -6,7 +6,7 @@ import {
   ObjectType,
   Field,
   compileSchema
-} from '../../src/index'
+} from '../../src/index.js'
 import graphqlHTTP from 'express-graphql'
 
 import {

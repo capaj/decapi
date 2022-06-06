@@ -1,4 +1,4 @@
-import { GraphQLUnionType, printSchema } from 'graphql'
+import { graphql, GraphQLUnionType, printSchema } from 'graphql'
 import {
   ObjectType,
   Union,
@@ -10,18 +10,24 @@ import {
 } from '../..'
 
 import 'jest'
-import { resolveType } from '../../services/utils/gql/types/typeResolvers'
+import { resolveType } from '../../services/utils/gql/types/typeResolvers.js'
 
-@ObjectType()
-class Sub1 {
-  @Field()
-  bar: string
+class ConstructorAssigner<T = any> {
+  constructor(parameters: Partial<T>) {
+    Object.assign(this, parameters)
+  }
 }
 
 @ObjectType()
-class Sub2 {
+class Sub1 extends ConstructorAssigner {
   @Field()
-  bar: number
+  bar1: string | null
+}
+
+@ObjectType()
+class Sub2 extends ConstructorAssigner {
+  @Field()
+  bar2: number | null
 }
 
 @Union({ types: [Sub1, Sub2] })
@@ -47,7 +53,7 @@ class Foo {
 describe('Unions', () => {
   it('Registers returns proper enum type', () => {
     const { bar } = compileObjectType(Foo).getFields()
-    expect(bar.type).toEqual(resolveType(UnionType))
+    expect(bar.type).toEqual(resolveType({ runtimeType: UnionType }))
     expect(bar.type).not.toEqual(UnionType)
   })
 
@@ -58,12 +64,14 @@ describe('Unions', () => {
 
     expect(
       unionType.resolveType &&
-        unionType.resolveType(new Sub1(), null, null, null)
-    ).toBe(resolveType(Sub1))
+        // @ts-expect-error 3/21/2022
+        unionType.resolveType(new Sub1(), null, null, null)?.toString()
+    ).toBe(resolveType({ runtimeType: Sub1 }).toString())
     expect(
       unionType.resolveType &&
-        unionType.resolveType(new Sub2(), null, null, null)
-    ).toBe(resolveType(Sub2))
+        // @ts-expect-error 3/21/2022
+        unionType.resolveType(new Sub2(), null, null, null)?.toString()
+    ).toBe(resolveType({ runtimeType: Sub2 }).toString())
   })
 
   it('Properly resolves with custom type resolver', () => {
@@ -73,8 +81,9 @@ describe('Unions', () => {
 
     expect(
       unionType.resolveType &&
+        // @ts-expect-error 3/21/2022
         unionType.resolveType(new Sub2(), null, null, null)
-    ).toBe(resolveType(Sub1))
+    ).toBe(resolveType({ runtimeType: Sub1 }))
     expect(customTypeResolver).toBeCalled()
   })
 
@@ -82,24 +91,50 @@ describe('Unions', () => {
     @SchemaRoot()
     class FooSchema {
       @Query({ type: [UnionType] })
-      aUnion() {}
+      aUnion() {
+        return [
+          new Sub1({
+            bar1: 'bar1'
+          }),
+          new Sub2({ bar2: 12 })
+        ]
+      }
     }
     const schema = compileSchema(FooSchema)
 
     expect(printSchema(schema)).toMatchInlineSnapshot(`
       "type Query {
-        aUnion: [UnionType!]
+        aUnion: [UnionType!]!
       }
 
       union UnionType = Sub1 | Sub2
 
       type Sub1 {
-        bar: String
+        bar1: String
       }
 
       type Sub2 {
-        bar: Float
+        bar2: Float
       }"
     `)
+
+    const result = await graphql({
+      schema,
+      source: `
+        {
+          aUnion {
+            ... on Sub1 {
+              bar1
+            }
+            ... on Sub2 {
+              bar2
+            }
+          }
+        }
+      `
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data?.castedQuery).toMatchSnapshot()
   })
 })

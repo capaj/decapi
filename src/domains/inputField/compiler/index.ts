@@ -1,16 +1,16 @@
 import {
-  GraphQLType,
   isInputType,
-  GraphQLInputType,
   GraphQLInputFieldConfig,
-  GraphQLInputFieldConfigMap,
-  GraphQLNonNull
+  GraphQLInputFieldConfigMap
 } from 'graphql'
 
-import { InputFieldError, inputFieldsRegistry } from '../InputFieldDecorators'
+import {
+  InputFieldError,
+  inputFieldsRegistry
+} from '../InputFieldDecorators.js'
 
-import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType'
-import { getClassWithAllParentClasses } from '../../../services/utils/inheritance'
+import { resolveTypeOrThrow, inferTypeOrThrow } from './fieldType.js'
+import { getClassWithAllParentClasses } from '../../../services/utils/getClassWithAllParentClasses.js'
 
 function getFinalInputFieldType(
   target: Function,
@@ -23,52 +23,29 @@ function getFinalInputFieldType(
   return inferTypeOrThrow(target, fieldName)
 }
 
-function validateResolvedType(
+export function compileInputFieldConfig(
   target: Function,
-  fieldName: string,
-  type: GraphQLType
-): type is GraphQLInputType {
-  if (!isInputType(type)) {
+  fieldName: string
+): GraphQLInputFieldConfig {
+  const { type, description, defaultValue } = inputFieldsRegistry.get(
+    target,
+    fieldName
+  )
+
+  const resolvedType = getFinalInputFieldType(target, fieldName, type)
+
+  if (!isInputType(resolvedType)) {
     throw new InputFieldError(
       target,
       fieldName,
       `Validation of type failed. Resolved type must be a GraphQLInputType.`
     )
   }
-  return true
-}
-
-function enhanceType(originalType: GraphQLInputType, isNullable: boolean) {
-  let finalType = originalType
-  if (!isNullable) {
-    finalType = new GraphQLNonNull(finalType)
-  }
-  return finalType
-}
-
-export function compileInputFieldConfig(
-  target: Function,
-  fieldName: string
-): GraphQLInputFieldConfig {
-  const {
-    type,
-    description,
-    defaultValue,
-    isNullable
-  } = inputFieldsRegistry.get(target, fieldName)
-
-  const resolvedType = getFinalInputFieldType(target, fieldName, type)
-
-  if (!validateResolvedType(target, fieldName, resolvedType)) {
-    return
-  }
-
-  const finalType = enhanceType(resolvedType, isNullable)
 
   return {
     description,
     defaultValue,
-    type: finalType
+    type: resolvedType
   }
 }
 

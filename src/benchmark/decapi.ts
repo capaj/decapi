@@ -1,23 +1,29 @@
-import { compileSchema, Field, ObjectType, Query, SchemaRoot } from '../index'
-import { runBenchmark } from './run'
+import {
+  compileSchema,
+  Field,
+  ObjectType,
+  Query,
+  SchemaRoot
+} from '../index.js'
+import { runBenchmark } from './run.js'
 
 @ObjectType()
 class SampleObject {
   @Field()
   sampleField!: string
 
-  @Field({ castTo: SampleObject })
+  @Field({ type: SampleObject })
   nestedField?: SampleObject
 }
 
 @SchemaRoot()
 class Schema {
-  @Query({ castTo: SampleObject })
+  @Query({ type: SampleObject })
   singleObject(): SampleObject {
     return { sampleField: 'sampleField' }
   }
 
-  @Query({ castTo: SampleObject })
+  @Query({ type: SampleObject })
   nestedObject(): SampleObject {
     return {
       sampleField: 'sampleField',

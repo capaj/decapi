@@ -1,15 +1,20 @@
 import { GraphQLType } from 'graphql'
 
-import { InputFieldError } from '../InputFieldDecorators'
-import { resolveType } from '../../../services/utils/gql/types/typeResolvers'
-import { inferTypeByTarget } from '../../../services/utils/gql/types/parseNative'
+import { InputFieldError } from '../InputFieldDecorators.js'
+import { resolveType } from '../../../services/utils/gql/types/typeResolvers.js'
+import { inferTypeByTarget } from '../../../services/utils/gql/types/inferTypeByTarget.js'
 
 export function resolveTypeOrThrow(
   type: any,
   target: Function,
   fieldName: string
 ): GraphQLType {
-  const resolvedType = resolveType(type, true, true)
+  const resolvedType = resolveType({
+    runtimeType: type,
+    isNullable: true, // TODO: make this configurable
+    allowThunk: true,
+    isArgument: true
+  })
 
   if (!resolvedType) {
     throw new InputFieldError(
@@ -36,5 +41,5 @@ export function inferTypeOrThrow(
     )
   }
 
-  return resolveType(inferredType, true, true)
+  return resolveType({ ...inferredType, allowThunk: true, isArgument: true })
 }

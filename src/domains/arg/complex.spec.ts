@@ -11,7 +11,7 @@ import {
 
 describe('Complex arguments', () => {
   it('should not allow complex argument type not decorated with @InputObjectType', async () => {
-    class Input {
+    class InputOne {
       @InputField()
       bar: string
     }
@@ -19,7 +19,7 @@ describe('Complex arguments', () => {
     @ObjectType()
     class Foo {
       @Field()
-      bar(input: Input): string {
+      bar(input: InputOne): string {
         return 'ok'
       }
     }
@@ -30,7 +30,7 @@ describe('Complex arguments', () => {
 
   it('should not allow complex argument type decorated with @ObjectType', async () => {
     @ObjectType()
-    class Input {
+    class InputTwo {
       @Field()
       bar: string
     }
@@ -38,7 +38,7 @@ describe('Complex arguments', () => {
     @ObjectType()
     class Foo {
       @Field()
-      bar(input: Input): string {
+      bar(input: InputTwo): string {
         return 'ok'
       }
     }
@@ -57,14 +57,19 @@ describe('Complex arguments', () => {
     @ObjectType()
     class Foo {
       @Field()
-      bar(input: Input): string {
+      nonNullable(input: Input): string {
+        return 'ok'
+      }
+      @Field()
+      nullable(input: Input | null): string {
         return 'ok'
       }
     }
-    const { bar } = compileObjectType(Foo).getFields()
-    expect(bar.args[0].type).toEqual(
+    const { nonNullable, nullable } = compileObjectType(Foo).getFields()
+    expect(nonNullable.args[0].type).toEqual(
       new GraphQLNonNull(compileInputObjectType(Input))
     )
+    expect(nullable.args[0].type).toEqual(compileInputObjectType(Input))
   })
 
   it('Supports scalar list argument type', () => {
@@ -83,7 +88,8 @@ describe('Complex arguments', () => {
 
   it('Supports nested list argument type', () => {
     @InputObjectType()
-    class Input {
+    class MySecondInput {
+      c = 1
       @InputField()
       bar: string
     }
@@ -91,13 +97,25 @@ describe('Complex arguments', () => {
     @ObjectType()
     class Foo {
       @Field()
-      bar(@Arg({ type: [Input] }) input: Input[]): string {
+      bar(@Arg({ type: [MySecondInput] }) input: MySecondInput[]): string {
         return 'ok'
       }
+
+      @Field()
+      foo(input: MySecondInput[]): string {
+        return input.length.toString()
+      }
     }
-    const { bar } = compileObjectType(Foo).getFields()
+    const { bar, foo } = compileObjectType(Foo).getFields()
+    const fooArgType = foo.args[0].type
     const argType = bar.args[0].type
-    expect(argType.toString()).toEqual('[Input!]!')
-    expect(getNamedType(argType)).toEqual(compileInputObjectType(Input))
+
+    expect(argType.toString()).toEqual('[MySecondInput!]!')
+    expect(getNamedType(argType)).toEqual(compileInputObjectType(MySecondInput))
+
+    expect(fooArgType.toString()).toEqual('[MySecondInput!]!')
+    expect(getNamedType(fooArgType)).toEqual(
+      compileInputObjectType(MySecondInput)
+    )
   })
 })

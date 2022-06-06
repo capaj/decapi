@@ -2,15 +2,16 @@ import {
   interfaceTypeRegistry,
   interfaceClassesSet,
   interfaceTypeImplementors
-} from './interfaceTypeRegistry'
+} from './interfaceTypeRegistry.js'
 
 import { GraphQLInterfaceType, GraphQLResolveInfo } from 'graphql'
 
-import { compileAllFields } from '../field/Field'
-import { createCachedThunk } from '../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance'
-import { objectTypeRegistry } from '../objectType/registry'
-import { Thunk } from '../../services/types'
+import { compileAllFields } from '../field/Field.js'
+import { createCachedThunk } from '../../services/utils/cachedThunk.js'
+
+import { objectTypeRegistry } from '../objectType/registry.js'
+import { Thunk } from '../../services/types.js'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 export type ITypeResolver = (
   value: any,
@@ -31,9 +32,11 @@ function getInterfaceResolveType(target: Function) {
     const implementors = interfaceTypeImplementors.get(target)
     if (Array.isArray(implementors)) {
       for (const implementor of implementors) {
-        if (Object.getPrototypeOf(value) === implementor.prototype) {
-          const typeGetterFromRegistry = objectTypeRegistry.get(implementor)
-
+        const typeGetterFromRegistry = objectTypeRegistry.get(implementor)
+        if (
+          Object.getPrototypeOf(value) === implementor.prototype &&
+          typeGetterFromRegistry
+        ) {
           const type = typeGetterFromRegistry()
 
           return type.name
@@ -43,7 +46,7 @@ function getInterfaceResolveType(target: Function) {
   }
 }
 
-function getFieldsGetter(target: Function, config: ITypeOptions) {
+function getFieldsGetter(target: Function, config?: ITypeOptions) {
   return createCachedThunk(() => {
     let targetWithParents = getClassWithAllParentClasses(target)
     if (config) {
@@ -54,6 +57,7 @@ function getFieldsGetter(target: Function, config: ITypeOptions) {
         targetWithParents = targetWithParents.concat(mixins)
       }
     }
+    // @ts-expect-error
     return compileAllFields(targetWithParents)
   })
 }
@@ -63,8 +67,10 @@ export function InterfaceType(config?: ITypeOptions): ClassDecorator {
     interfaceClassesSet.add(target)
 
     const typeGetter = () => {
-      if (compileInterfaceCache.has(target)) {
-        return compileInterfaceCache.get(target)
+      const intfcCache = compileInterfaceCache.get(target)
+
+      if (intfcCache) {
+        return intfcCache
       }
 
       const name = config && config.name ? config.name : target.name

@@ -23,7 +23,7 @@ class CustomObject {
 }
 
 @SchemaRoot()
-class MySchema {
+export class MySchemaCustomDecorators {
   @Query()
   getCustomObject(stringValue: string): CustomObject {
     const object = new CustomObject()
@@ -32,4 +32,6 @@ class MySchema {
   }
 }
 
-export const schema = compileSchema(MySchema)
+export const schemaWithCustomDecorators = compileSchema(
+  MySchemaCustomDecorators
+)

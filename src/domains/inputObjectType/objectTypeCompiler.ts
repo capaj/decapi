@@ -2,14 +2,16 @@ import { GraphQLInputObjectType, GraphQLInputFieldConfigMap } from 'graphql'
 import {
   InputObjectTypeError,
   inputObjectTypeRegistry
-} from './InputObjectType'
+} from './InputObjectType.js'
 
 import {
   inputFieldsRegistry,
   compileAllInputFields
-} from '../inputField/InputFieldDecorators'
-import { createCachedThunk } from '../../services/utils/cachedThunk'
-import { getClassWithAllParentClasses } from '../../services/utils/inheritance'
+} from '../inputField/InputFieldDecorators.js'
+import { createCachedThunk } from '../../services/utils/cachedThunk.js'
+
+import { Constructor } from 'typescript-rtti'
+import { getClassWithAllParentClasses } from '../../services/utils/getClassWithAllParentClasses.js'
 
 const compileOutputTypeCache = new WeakMap<Function, GraphQLInputObjectType>()
 
@@ -19,7 +21,7 @@ export interface ITypeOptions {
 }
 
 function createTypeInputFieldsGetter(
-  target: Function
+  target: Constructor<Function>
 ): () => GraphQLInputFieldConfigMap {
   const targetWithParents = getClassWithAllParentClasses(target)
   const hasFields = targetWithParents.some((ancestor) => {
@@ -39,11 +41,13 @@ function createTypeInputFieldsGetter(
 }
 
 export function compileInputObjectTypeWithConfig(
-  target: Function,
+  target: Constructor<Function>,
   config: ITypeOptions
 ): GraphQLInputObjectType {
-  if (compileOutputTypeCache.has(target)) {
-    return compileOutputTypeCache.get(target)
+  const outputTypeCache = compileOutputTypeCache.get(target)
+
+  if (outputTypeCache) {
+    return outputTypeCache
   }
   const compiled = new GraphQLInputObjectType({
     ...config,
@@ -55,14 +59,14 @@ export function compileInputObjectTypeWithConfig(
 }
 
 export function compileInputObjectType(target: Function) {
-  if (!inputObjectTypeRegistry.has(target)) {
+  const compiler = inputObjectTypeRegistry.get(target as Constructor<Function>)
+
+  if (!compiler) {
     throw new InputObjectTypeError(
       target,
       `Class is not registered. Make sure it's decorated with @InputObjectType decorator`
     )
   }
-
-  const compiler = inputObjectTypeRegistry.get(target)
 
   return compiler()
 }

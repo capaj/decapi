@@ -1,5 +1,5 @@
-import { rootFieldTypes } from '../schema/rootFields'
-import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap'
+import { rootFieldTypes } from '../schema/rootFields.js'
+import { DeepWeakMap } from '../../services/utils/deepWeakMap/DeepWeakMap.js'
 
 export interface IAllRegisteredFields {
   [fieldName: string]: IFieldInnerConfig
@@ -16,14 +16,10 @@ export interface IFieldInnerConfig {
   rootFieldType?: rootFieldTypes
   property: string
   description?: string
-  isNullable?: boolean
-  itemNullable?: boolean
-  castTo?: any
+  nullable?: boolean
+  type?: any
   onlyDecoratedArgs?: boolean
   deprecationReason?: string
-  type?: any
-  itemType?: any
-  itemCast?: any
 }
 
 export interface IAllQueryFields {

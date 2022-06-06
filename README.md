@@ -16,12 +16,11 @@ decapi is a set of decorators for creating GraphQL APIs in typescript. Write you
 ### Examples:
 
 - [Basic Express example](examples/basic-express-server)
+  - also showcases [Custom decorators / Higher order decorators](examples/basic-express-server/schemaWithCustomDecorators.ts)
 - [Typeorm integration example](examples/typeorm-basic-integration)
 - [Forward resolution - eg. query only needed db fields](examples/forward-resolution)
 - [Nested mutations or queries](examples/nested-mutation-or-query)
-- [Custom decorators / Higher order decorators](examples/custom-decorators)
 - [Serverless eg. AWS Lambda](examples/serverless)
-- [Merge schemas](examples/merge-schemas)
 
 ## Basic example
 
@@ -49,22 +48,14 @@ const compiledSchema = compileSchema(SuperSchema)
 
 `compiledSchema` is a regular GQL executable schema compatible with `graphql-js` library.
 
-To use it with `express`, you'd have to simply:
+To use it with `apollo-server`, you'd have to use like this:
 
 ```ts
-import express from 'express'
-import graphqlHTTP from 'express-graphql'
+import ApolloServer from 'apollo-server'
 
-const app = express()
+const server = new ApolloServer({ schema, graphiql: true })
 
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: compiledSchema,
-    graphiql: true
-  })
-)
-app.listen(3000, () =>
+server.listen(3000, () =>
   console.log('Graphql API ready on http://localhost:3000/graphql')
 )
 ```
@@ -125,18 +116,17 @@ class SuperSchema {
 const compiledSchema = compileSchema(SuperSchema)
 ```
 
-## Setting the type explicitly
+## Type inference from typescript
 
-In previous examples, `decapi` was able to determine the type of every field from typescript type definitions.
+These cases are supported by decapi 2/typescript-rtti:
 
-There are, however cases where we have to define them explicitly.
+- Unions - for example we want to specify whether field is nullable or not
+- Function returns type of `Promise<SomeType>`
+- List (Array) type is used
 
-- We want to specify whether field is nullable or not
-- We want to be explicit about if some `number` type is `Float` or `Int` (`GraphQLFloat` or `GraphQLInt`) etc
-- Function we use returns type of `Promise<SomeType>` while field itself is typed as `SomeType`
-- List (Array) type is used. (For now, typescript `Reflect` api is not able to guess type of single array item)
+All other code-first libraries on decorators like typegraphql or typegql require you to write types for these twice. Decapi infers types from typescript without any extra effort on your end.
 
-For major version 1.0.0 we will use https://github.com/rezonant/typescript-rtti so it will be able to determine all types directly from the TS type. This is WIP ATM.
+Even in decapi 2 onward you still can write an explicit type. There are situations when typescript types are not precise enough- for example you want to be explicit about if some `number` type is `Float` or `Int` (`GraphQLFloat` or `GraphQLInt`).
 
 Let's modify our `Product` so it has additional `categories` field that will return array of strings. For the sake of readability, let's ommit all fields we've defined previously.
 
@@ -174,24 +164,28 @@ class Product {
 
 ## Compared to type-graphql
 
-There is a much more popular [library](https://github.com/19majkel94/type-graphql) with the same goals-so what makes decapi different? Decapi has smaller API surface-it only has hooks on top of the basic decorators for constructing schemas.
-Whereas type-graphql has authorization, middleware, guards.
-Also decapi supports graphql v16. Typegraphql is still only supporting Graphql v15
+There is a much more popular [library](https://github.com/19majkel94/type-graphql) with the same goals-so what makes decapi different?
+
+1.  decapi does reflection through typescript-rtti, so it can infer 99% directly from typescript types without having to write them twice
+2.  Decapi has smaller API surface-it only has hooks on top of the basic decorators for constructing schemas. Whereas type-graphql has authorization, middleware, guards.
+3.  Also decapi supports graphql v16. Typegraphql is still only supporting Graphql v15
 
 ## Why forking?
 
-I wanted to contribute to [typegql](https://github.com/prismake/typegql) and work on it together with @pie6k, but it soon became obvious that we both have something different in mind. Just to briefly summarise the differences:
+Initially I wanted to contribute to [typegql](https://github.com/prismake/typegql) and work on it together with @pie6k, but it soon became obvious that we both have something different in mind. Just to briefly summarize the differences:
 
 - decapi has `@DuplexObjectType` and `@DuplexField`
 - decapi supports interfaces and mixins
 - decapi can infer Date type
-- decapi has `castTo` Field config
+- decapi casts plain objects by default, which means it is much easier to use without ORMs. Even prisma needs this casting, because all the objects returned are POJO objects.
 - InputObjectType argument passed to Field/Query method is not just a plain object, but an instance of it's class.
 - decapi allows you to have an empty object type-you can populate it with fields at runtime
 
-## Before `1.0.0`
+## Upgrading from 1.0.0 to 2.0.0
 
-Before version `1.0.0` consider APIs of `decapi` to be subject to change. We encourage you to try this library out and provide us feedback so we can polish it to be as usable and efficent as possible.
+Firstly, you must install all the new peer dependencies.
+This major was a complete rewrite of the reflection of types. From 2.0.0 decapi uses typescript-rtti to infer graphql types from typescript. This works for 99% of TS types.
+This means you should always have your decorators without explicit `type` property.
 
 ## TC39 decorators proposal
 

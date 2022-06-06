@@ -6,12 +6,12 @@ import {
   isObjectType
 } from 'graphql'
 
-import { UnionError } from './error'
-import { Thunk } from '../../services/types'
+import { UnionError } from './error.js'
+import { Thunk } from '../../services/types.js'
 import {
   resolveType,
   resolveTypesList
-} from '../../services/utils/gql/types/typeResolvers'
+} from '../../services/utils/gql/types/typeResolvers.js'
 
 export type UnionTypeResolver = (
   value: any,
@@ -27,11 +27,14 @@ export interface IUnionOptions {
 
 const compileUnionCache = new WeakMap<Function, GraphQLUnionType>()
 
-function getDefaultResolver(types: GraphQLObjectType[]): UnionTypeResolver {
+function getDefaultResolver(
+  runtimeTypes: any[],
+  resolvedTypes: GraphQLObjectType[]
+): UnionTypeResolver {
   return (value: any, context: any, info: any) => {
-    for (const type of types) {
-      if (type.isTypeOf && type.isTypeOf(value, context, info)) {
-        return type
+    for (const runtimeType of runtimeTypes) {
+      if (value instanceof runtimeType) {
+        return runtimeType.name
       }
     }
   }
@@ -45,7 +48,7 @@ function enhanceTypeResolver(
 ): UnionTypeResolver {
   return (value, context, info) => {
     const rawResolvedType = originalResolver(value, context, info)
-    return resolveType(rawResolvedType)
+    return resolveType({ runtimeType: rawResolvedType })
   }
 }
 
@@ -79,10 +82,10 @@ export function compileUnionType(target: Function, config: IUnionOptions) {
 
   const typeResolver = resolveTypes
     ? enhanceTypeResolver(resolveTypes)
-    : getDefaultResolver(resolvedTypes)
+    : getDefaultResolver(types as any, resolvedTypes)
 
   const compiled = new GraphQLUnionType({
-    name,
+    name: name ?? target.name,
     resolveType: typeResolver,
     types: resolvedTypes
   })

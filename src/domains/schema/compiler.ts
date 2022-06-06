@@ -3,21 +3,21 @@ import {
   queryFieldsRegistry,
   mutationFieldsRegistry,
   RootFieldsRegistry
-} from './registry'
-import { SchemaRootError } from './error'
+} from './registry.js'
+import { SchemaRootError } from './error.js'
 
-import { validateSchemaRoots } from './services'
+import { validateSchemaRoots } from './services.js'
 import {
   interfaceClassesSet,
   interfaceTypeImplementors
-} from '../interfaceType/interfaceTypeRegistry'
-import { objectTypeRegistry } from '../objectType/registry'
+} from '../interfaceType/interfaceTypeRegistry.js'
+import { objectTypeRegistry } from '../objectType/registry.js'
 
 function getAllRootFieldsFromRegistry(
   roots: Function[],
   registry: RootFieldsRegistry,
   name: 'Query' | 'Mutation'
-): GraphQLObjectType {
+): GraphQLObjectType | null {
   const allRootFields: { [key: string]: GraphQLFieldConfig<any, any> } = {}
   for (const root of roots) {
     const rootFields = registry.getAll(root)
@@ -76,7 +76,13 @@ export function compileSchema(schemaOrSchemas: Function | Function[]) {
     const implementorClasses = interfaceTypeImplementors.get(interfaceClass)
     if (Array.isArray(implementorClasses)) {
       implementorClasses.forEach((implementorClass) => {
-        const implementor = objectTypeRegistry.get(implementorClass)()
+        const getter = objectTypeRegistry.get(implementorClass)
+        if (!getter) {
+          throw new Error(
+            `Could not get object type for interface class: ${interfaceClass.name}`
+          )
+        }
+        const implementor = getter()
         extraTypes.push(implementor)
       })
     } else {
