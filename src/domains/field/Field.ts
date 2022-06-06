@@ -43,7 +43,7 @@ export function Field(options?: IFieldOptions): PropertyDecorator {
       options.type === undefined
     ) {
       console.log(
-        'This usually happens when a circular dependency is present. Wrap your explicit castTo in an arrow function to avoid this problem.'
+        'This usually happens when a circular dependency is present. Wrap your explicit type in an arrow function to avoid this problem.'
       )
       throw new TypeError(
         `Field "${fieldName}" on ${targetInstance.constructor} got an "undefined" as explicit type`

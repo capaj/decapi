@@ -158,38 +158,38 @@ function getFieldOfTarget(instance: any, prototype: any, fieldName: string) {
 export function compileFieldResolver(
   target: Constructor<Function>,
   fieldName: string,
-  castTo?: any
+  explicitType?: any
 ): GraphQLFieldResolver<any, any> {
   function castIfNeeded(result: any) {
-    if (castTo && result !== null && typeof result === 'object') {
-      if (castTo.name === 'type') {
+    if (explicitType && result !== null && typeof result === 'object') {
+      if (explicitType.name === 'type') {
         // this function is a thunk, so we get the type now
-        castTo = castTo()
+        explicitType = explicitType()
       }
 
-      if (Array.isArray(castTo)) {
-        if (interfaceTypeRegistry.has(castTo[0])) {
+      if (Array.isArray(explicitType)) {
+        if (interfaceTypeRegistry.has(explicitType[0])) {
           return result
         }
         if (!Array.isArray(result)) {
           throw new TypeError(
-            `field ${fieldName} castTo is an array, yet it resolves with ${result} which is ${typeof result}`
+            `field ${fieldName} explicit type is an array, yet it resolves with ${result} which is ${typeof result}`
           )
         }
         return result.map((item: any) => {
           if (Array.isArray(item)) {
             console.error('array cannot be casted as object type: ', item)
             throw new TypeError(
-              `field "${fieldName}" cannot be casted to object type ${castTo[0].name} - returned value is an array`
+              `field "${fieldName}" cannot be casted to object type ${explicitType[0].name} - returned value is an array`
             )
           }
-          return plainToInstance(castTo[0], item)
+          return plainToInstance(explicitType[0], item)
         })
       } else {
-        if (interfaceTypeRegistry.has(castTo)) {
+        if (interfaceTypeRegistry.has(explicitType)) {
           return result
         }
-        return plainToInstance(castTo, result)
+        return plainToInstance(explicitType, result)
       }
     }
     return result

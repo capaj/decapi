@@ -21,7 +21,6 @@ Registers a class field as a GraphQLField.
 interface IFieldOptions {
   description?: string
   type?: any
-  castTo?: any
   onlyDecoratedArgs?: boolean // when true this will not expose arguments that aren't decorated by @Arg()
   // useful when you have optional arguments that you only want to use on the backend
   name?: string
