@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "noImplicitUseStrict": true,
     "types": ["reflect-metadata", "jest", "node"],
+    "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "baseUrl": ".",
     "rootDir": "./src",
