@@ -1,6 +1,6 @@
 {
   "name": "decapi",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "type": "module",
   "main": "dist/cjs/index.js",
   "exports": {
@@ -23,6 +23,7 @@
     "buildCjs": "rm -rf types lib && tsc --project tsconfig.json --module commonjs --outDir dist/cjs",
     "buildEsm": "rm -rf types lib && tsc --project tsconfig.json --module ESNext --outDir dist/esm",
     "precommit": "pretty-quick --staged",
+    "prepublishOnly": "yarn build",
     "build": "yarn buildCjs && yarn buildEsm"
   },
   "engines": {
