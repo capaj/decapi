@@ -1,9 +1,14 @@
 {
   "name": "decapi",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "type": "module",
   "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
+  },
   "types": "types/index.d.ts",
   "license": "MIT",
   "scripts": {
@@ -11,8 +16,8 @@
     "lint": "tslint --project ./tsconfig.json",
     "docz:build": "docz build && cp docs/netlify.toml .docz/dist/",
     "pretest": "yarn lint",
-    "bench": "ts-node src/benchmark/decapi",
-    "benchTG": "ts-node src/benchmark/type-graphql",
+    "bench": "ts-node-esm -C ttypescript src/benchmark/decapi",
+    "benchTG": "ts-node-esm -C ttypescript src/benchmark/type-graphql",
     "test": "jest --coverage",
     "w": "jest --watch",
     "buildCjs": "rm -rf types lib && tsc --project tsconfig.json --module commonjs --outDir dist/cjs",

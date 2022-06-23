@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": { "*": ["types/*"] },
-    "module": "commonjs",
+    "module": "ESNext",
     "lib": ["es2018", "dom"],
     "target": "ES2018",
     "noImplicitAny": true,
