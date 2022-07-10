@@ -155,46 +155,46 @@ function getFieldOfTarget(instance: any, prototype: any, fieldName: string) {
   return prototype[fieldName]
 }
 
+function castIfNeeded(result: any, explicitType: any, fieldName: string) {
+  if (explicitType && result !== null && typeof result === 'object') {
+    if (explicitType.name === 'type') {
+      // this function is a thunk, so we get the type now
+      explicitType = explicitType()
+    }
+
+    if (Array.isArray(explicitType)) {
+      if (interfaceTypeRegistry.has(explicitType[0])) {
+        return result
+      }
+      if (!Array.isArray(result)) {
+        throw new TypeError(
+          `field ${fieldName} explicit type is an array, yet it resolves with ${result} which is ${typeof result}`
+        )
+      }
+      return result.map((item: any) => {
+        if (Array.isArray(item)) {
+          console.error('array cannot be casted as object type: ', item)
+          throw new TypeError(
+            `field "${fieldName}" cannot be casted to object type ${explicitType[0].name} - returned value is an array`
+          )
+        }
+        return plainToInstance(explicitType[0], item)
+      })
+    } else {
+      if (interfaceTypeRegistry.has(explicitType)) {
+        return result
+      }
+      return plainToInstance(explicitType, result)
+    }
+  }
+  return result
+}
+
 export function compileFieldResolver(
   target: Constructor<Function>,
   fieldName: string,
   explicitType?: any
 ): GraphQLFieldResolver<any, any> {
-  function castIfNeeded(result: any) {
-    if (explicitType && result !== null && typeof result === 'object') {
-      if (explicitType.name === 'type') {
-        // this function is a thunk, so we get the type now
-        explicitType = explicitType()
-      }
-
-      if (Array.isArray(explicitType)) {
-        if (interfaceTypeRegistry.has(explicitType[0])) {
-          return result
-        }
-        if (!Array.isArray(result)) {
-          throw new TypeError(
-            `field ${fieldName} explicit type is an array, yet it resolves with ${result} which is ${typeof result}`
-          )
-        }
-        return result.map((item: any) => {
-          if (Array.isArray(item)) {
-            console.error('array cannot be casted as object type: ', item)
-            throw new TypeError(
-              `field "${fieldName}" cannot be casted to object type ${explicitType[0].name} - returned value is an array`
-            )
-          }
-          return plainToInstance(explicitType[0], item)
-        })
-      } else {
-        if (interfaceTypeRegistry.has(explicitType)) {
-          return result
-        }
-        return plainToInstance(explicitType, result)
-      }
-    }
-    return result
-  }
-
   const injectors = injectorRegistry.getAll(target)[fieldName]
   const beforeHooks = fieldBeforeHooksRegistry.get(target, fieldName)
   const afterHooks = fieldAfterHooksRegistry.get(target, fieldName)
@@ -221,7 +221,7 @@ export function compileFieldResolver(
 
     let resolvedValue
     if (typeof instanceField !== 'function') {
-      resolvedValue = castIfNeeded(instanceField) // TODO double check if we need to do this. Previously this was needed for methods too
+      resolvedValue = castIfNeeded(instanceField, explicitType, fieldName) // TODO double check if we need to do this. Previously this was needed for methods too
       if (afterHooks) {
         await performAfterHooksExecution(
           afterHooks,
@@ -233,17 +233,19 @@ export function compileFieldResolver(
     }
 
     const instanceFieldFunc = instanceField as Function
-
-    const params = computeFinalArgs(instanceFieldFunc, {
-      args: args || {},
-      // reflectedParamTypes: reflect(target).getMethod(fieldName).parameterTypes,
-      injectors: injectors || {},
-      injectorToValueMapper: (injector) =>
-        injector.apply(source, [{ source, args, context, info }]),
-      getArgConfig: (index: number) => {
-        return argRegistry.get(target, [fieldName, index])
-      }
-    })
+    let params = []
+    if (instanceFieldFunc.length > 0) {
+      params = computeFinalArgs(instanceFieldFunc, {
+        args: args || {},
+        // reflectedParamTypes: reflect(target).getMethod(fieldName).parameterTypes,
+        injectors: injectors || {},
+        injectorToValueMapper: (injector) =>
+          injector.apply(source, [{ source, args, context, info }]),
+        getArgConfig: (index: number) => {
+          return argRegistry.get(target, [fieldName, index])
+        }
+      })
+    }
 
     const promiseOrValue = instanceFieldFunc.apply(source, params)
     resolvedValue = isPromiseLike(promiseOrValue)

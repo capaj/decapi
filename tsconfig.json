@@ -30,5 +30,8 @@
     "./examples",
     "./types"
     // , "**/*.spec.ts", "./src/specs" // for some reason these cause the build to fail
-  ]
+  ],
+  "ts-node": {
+    "compiler": "ttypescript"
+  }
 }
