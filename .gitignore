@@ -12,5 +12,5 @@ coverage
 yarn-error.log
 .vscode
 .docz
-dist
+
 isolate-*.log
