@@ -11,3 +11,4 @@ assets
 coverage
 CHANGELOG.md
 README.md
+!dist/**
