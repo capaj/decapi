@@ -75,7 +75,6 @@ export function compileObjectTypeWithConfig(
   })
 
   const compiled = new GraphQLObjectType({
-    // @ts-expect-error
     interfaces: interfaces
       ? createCachedThunk(() => {
           return interfaces.map((intf) => intf())
