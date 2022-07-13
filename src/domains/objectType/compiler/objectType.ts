@@ -79,7 +79,7 @@ export function compileObjectTypeWithConfig(
       ? createCachedThunk(() => {
           return interfaces.map((intf) => intf())
         })
-      : null,
+      : undefined,
     name: config.name ?? target.name,
     description: config.description,
     // isTypeOf: (value: any) => value instanceof target, // TODO double check that we don't need this

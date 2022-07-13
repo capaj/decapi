@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from 'graphql'
+import { GraphQLFieldResolver, isScalarType } from 'graphql'
 
 import {
   HookExecutor,
@@ -155,8 +155,14 @@ function getFieldOfTarget(instance: any, prototype: any, fieldName: string) {
   return prototype[fieldName]
 }
 
-function castIfNeeded(result: any, explicitType: any, fieldName: string) {
-  if (explicitType && result !== null && typeof result === 'object') {
+function castIfNeeded(value: any, explicitType: any, fieldName: string) {
+  if (isScalarType(explicitType)) {
+    return value
+  }
+  if (interfaceTypeRegistry.has(explicitType)) {
+    return value
+  }
+  if (explicitType && value !== null && typeof value === 'object') {
     if (explicitType.name === 'type') {
       // this function is a thunk, so we get the type now
       explicitType = explicitType()
@@ -164,14 +170,14 @@ function castIfNeeded(result: any, explicitType: any, fieldName: string) {
 
     if (Array.isArray(explicitType)) {
       if (interfaceTypeRegistry.has(explicitType[0])) {
-        return result
+        return value
       }
-      if (!Array.isArray(result)) {
+      if (!Array.isArray(value)) {
         throw new TypeError(
-          `field ${fieldName} explicit type is an array, yet it resolves with ${result} which is ${typeof result}`
+          `field ${fieldName} explicit type is an array, yet it resolves with ${value} which is ${typeof value}`
         )
       }
-      return result.map((item: any) => {
+      return value.map((item: any) => {
         if (Array.isArray(item)) {
           console.error('array cannot be casted as object type: ', item)
           throw new TypeError(
@@ -180,14 +186,11 @@ function castIfNeeded(result: any, explicitType: any, fieldName: string) {
         }
         return plainToInstance(explicitType[0], item)
       })
-    } else {
-      if (interfaceTypeRegistry.has(explicitType)) {
-        return result
-      }
-      return plainToInstance(explicitType, result)
     }
+
+    return plainToInstance(explicitType, value)
   }
-  return result
+  return value
 }
 
 export function compileFieldResolver(

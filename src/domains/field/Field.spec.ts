@@ -20,7 +20,7 @@ import {
   compileSchema,
   Arg
 } from '../..'
-import { GraphQLDateTime } from 'graphql-scalars'
+import { GraphQLDate, GraphQLDateTime, GraphQLJSON } from 'graphql-scalars'
 
 describe('Field', () => {
   it('Resolves fields with default value', async () => {
@@ -441,6 +441,10 @@ describe('Field', () => {
     @ObjectType()
     class Foo {
       baz = 'baz'
+      constructor() {
+        this.fieldWithExplicitJSONType = { baz: 'foo' }
+      }
+
       @Field()
       bar(): string {
         return this.baz
@@ -492,13 +496,23 @@ describe('Field', () => {
       castedFieldAsArrayWithBadReturnValue() {
         return [[{ baz: 'castedFromAField1' }]]
       }
+
+      @Field({ type: GraphQLJSON })
+      fieldWithExplicitJSONType: any
+
+      @Field({ type: [GraphQLDate] })
+      fieldWithExplicitScalarArrayType: string[]
     }
 
     @SchemaRoot()
     class FooSchema {
       @Query({ type: Foo })
       castedQuery() {
-        return { baz: 'castedFromAQuery' }
+        return {
+          baz: 'castedFromAQuery',
+          fieldWithExplicitJSONType: { baz: 'foo' },
+          fieldWithExplicitScalarArrayType: ['2019-01-01']
+        }
       }
     }
     const schema = compileSchema(FooSchema)
@@ -578,6 +592,8 @@ describe('Field', () => {
               castedArrayField {
                 bar
               }
+              fieldWithExplicitJSONType
+              fieldWithExplicitScalarArrayType
             }
           }
         `
