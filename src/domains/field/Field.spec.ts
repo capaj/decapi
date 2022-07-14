@@ -632,5 +632,6 @@ describe('Field', () => {
         `
       })
       expect(result).toMatchSnapshot()
+    })
   })
 })
