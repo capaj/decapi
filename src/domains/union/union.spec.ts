@@ -64,14 +64,17 @@ describe('Unions', () => {
 
     expect(
       unionType.resolveType &&
-        // @ts-expect-error 3/21/2022
-        unionType.resolveType(new Sub1(), null, null, null)?.toString()
-    ).toBe(resolveType({ runtimeType: Sub1 }).toString())
+        unionType
+          // @ts-expect-error 3/21/2022
+
+          .resolveType(new Sub1({ bar1: '' }), null, null, null)
+          ?.toString()
+    ).toBe('Sub1')
     expect(
       unionType.resolveType &&
         // @ts-expect-error 3/21/2022
         unionType.resolveType(new Sub2(), null, null, null)?.toString()
-    ).toBe(resolveType({ runtimeType: Sub2 }).toString())
+    ).toBe(resolveType({ runtimeType: Sub2, isNullable: true }).toString())
   })
 
   it('Properly resolves with custom type resolver', () => {
@@ -82,8 +85,8 @@ describe('Unions', () => {
     expect(
       unionType.resolveType &&
         // @ts-expect-error 3/21/2022
-        unionType.resolveType(new Sub2(), null, null, null)
-    ).toBe(resolveType({ runtimeType: Sub1 }))
+        unionType.resolveType(new Sub2(), null, null, null)?.toString()
+    ).toBe('Sub1')
     expect(customTypeResolver).toBeCalled()
   })
 

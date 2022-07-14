@@ -2,7 +2,7 @@
 
 exports[`Query with enums picks up description and deprecation 1`] = `
 "type Query {
-  hello: Hello
+  hello: Hello!
 }
 
 type Hello {

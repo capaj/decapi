@@ -26,16 +26,16 @@ Object {
 
 exports[`Field IFieldOptions should print as expected 1`] = `
 "type Query {
-  castedQuery: Foo
+  castedQuery: Foo!
 }
 
 type Foo {
-  bar: String!
+  bar: String
   deprecated: String! @deprecated(reason: \\"obsolete\\")
-  castedField: Foo
-  castedFieldDefinedAsThunk: Foo
+  castedField: Foo!
+  castedFieldDefinedAsThunk: Foo!
   castedFieldNullReturning: Foo
-  castedFieldUndefinedReturning: Foo
+  castedFieldUndefinedReturning: Foo!
   castedFieldAsArray: [Foo!]!
   castedFieldAsArrayDefinedAsThunk: [Foo!]!
   castedArrayFieldDefinedAsThunk: [Foo!]!
@@ -91,6 +91,21 @@ Object {
   "fieldWithExplicitScalarArrayType": Array [
     "2019-01-01",
   ],
+}
+`;
+
+exports[`Field IFieldOptions throws when returning array of arrays with an array type 1`] = `
+Object {
+  "data": Object {
+    "castedQuery": Object {
+      "bar": "castedFromAQuery",
+      "castedFieldAsArrayWithBadReturnValue": Array [
+        Object {
+          "bar": null,
+        },
+      ],
+    },
+  },
 }
 `;
 

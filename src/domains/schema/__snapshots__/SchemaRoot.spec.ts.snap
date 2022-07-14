@@ -118,9 +118,13 @@ Object {
               "isDeprecated": false,
               "name": "hello",
               "type": Object {
-                "kind": "OBJECT",
-                "name": "Hello",
-                "ofType": null,
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": Object {
+                  "kind": "OBJECT",
+                  "name": "Hello",
+                  "ofType": null,
+                },
               },
             },
           ],

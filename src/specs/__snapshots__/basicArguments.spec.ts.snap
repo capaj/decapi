@@ -2,7 +2,7 @@
 
 exports[`arguments should compile args correctly 1`] = `
 "type Query {
-  hello: Hello
+  hello: Hello!
 }
 
 type Hello {
@@ -13,7 +13,7 @@ type Hello {
 
 exports[`onlyDecoratedArgs should omit args when onlyDecoratedArgs is used 1`] = `
 "type Query {
-  test: Test
+  test: Test!
 }
 
 type Test {

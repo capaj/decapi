@@ -2,7 +2,7 @@
 
 exports[`Query a mixin method accepts a thunk to avoid circular refs 1`] = `
 "type Query {
-  hello: Hello
+  hello: Hello!
 }
 
 type Hello {
@@ -23,7 +23,7 @@ interface InterfaceSampleType {
 }
 
 type Query {
-  hello: Hello
+  hello: Hello!
   interfaceReturning: InterfaceSampleType
 }
 

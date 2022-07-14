@@ -2,8 +2,8 @@
 
 exports[`decorator aliases should compile 1`] = `
 "type Query {
-  output: Bar
-  echo(input: BarInput): Bar
+  output: Bar!
+  echo(input: BarInput): Bar!
 }
 
 type Bar {
@@ -18,14 +18,14 @@ input BarInput {
 }
 
 type Mutation {
-  output: Bar
-  echo(input: BarInput): Bar
+  output: Bar!
+  echo(input: BarInput): Bar!
 }"
 `;
 
 exports[`decorator aliases should define the fields with array types correctly 1`] = `
 "type Query {
-  output: Bar
+  output: Bar!
 }
 
 type Bar {
@@ -36,6 +36,6 @@ type Bar {
 }
 
 type Mutation {
-  output: Bar
+  output: Bar!
 }"
 `;

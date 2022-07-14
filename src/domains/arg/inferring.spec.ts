@@ -133,10 +133,14 @@ describe('fields', () => {
     class Foo {
       @Field()
       bar: string[] | null
+
+      @Field()
+      baz: Promise<Foo>
     }
-    const { bar } = compileObjectType(Foo).getFields()
+    const { bar, baz } = compileObjectType(Foo).getFields()
 
     expect(bar.type).toEqual(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     expect(bar.name).toBe('bar')
+    expect(baz.type.toString()).toEqual('Foo!')
   })
 })

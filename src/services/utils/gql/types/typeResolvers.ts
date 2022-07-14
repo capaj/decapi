@@ -1,4 +1,12 @@
-import { isType, GraphQLType, GraphQLList, GraphQLNonNull } from 'graphql'
+import {
+  isType,
+  GraphQLType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInterfaceType,
+  GraphQLObjectType,
+  GraphQLUnionType
+} from 'graphql'
 
 import {
   isParsableScalar,
@@ -35,10 +43,17 @@ export interface IResolveTypeParams {
  */
 export function resolveType({
   runtimeType: type,
-  isNullable = false,
+  isNullable,
   allowThunk = true,
   isArgument = false
 }: IResolveTypeParams): GraphQLType {
+  const wrapNonNull = (
+    gqlType:
+      | GraphQLInterfaceType
+      | GraphQLUnionType
+      | GraphQLObjectType<any, any>
+  ) => (isNullable ? gqlType : new GraphQLNonNull(gqlType))
+
   if (isType(type)) {
     return isNullable ? type : new GraphQLNonNull(type)
   }
@@ -50,7 +65,7 @@ export function resolveType({
   }
 
   if (Array.isArray(type)) {
-    return resolveListType(type, isArgument, isNullable)
+    return resolveListType(type, isArgument, isNullable ?? false)
   }
   const enumGetter = enumsRegistry.get(type)
 
@@ -73,9 +88,9 @@ export function resolveType({
     return compileInputObjectType(type)
   }
 
-  const objectGetter = objectTypeRegistry.get(type)
-  if (objectGetter) {
-    return compileObjectType(type)
+  const objectTypeGetter = objectTypeRegistry.get(type)
+  if (objectTypeGetter) {
+    return wrapNonNull(compileObjectType(type))
   }
 
   if (
@@ -138,10 +153,10 @@ function resolveListType(
 export function resolveTypesList(types: Thunk<any[]>): GraphQLType[] {
   if (Array.isArray(types)) {
     return types.map((type) => {
-      return resolveType({ runtimeType: type })
+      return resolveType({ runtimeType: type, isNullable: true })
     })
   }
   return types().map((type) => {
-    return resolveType({ runtimeType: type })
+    return resolveType({ runtimeType: type, isNullable: true })
   })
 }

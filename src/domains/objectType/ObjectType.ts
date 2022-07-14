@@ -3,7 +3,6 @@ import { objectTypeRegistry } from './registry.js'
 import { interfaceTypeImplementors } from '../interfaceType/interfaceTypeRegistry.js'
 import { Thunk } from '../../services/types'
 
-
 export { compileObjectType } from './compiler/objectType.js'
 export { ObjectTypeError } from './error.js'
 export { objectTypeRegistry, inputTypeRegistry } from './registry.js'
@@ -30,6 +29,7 @@ export function ObjectType(options?: IObjectTypeOptions): ClassDecorator {
 
     const config = { name: target.name, ...options }
     // @ts-expect-error
+
     const outputTypeCompiler = () => compileObjectTypeWithConfig(target, config)
 
     objectTypeRegistry.set(target, outputTypeCompiler)

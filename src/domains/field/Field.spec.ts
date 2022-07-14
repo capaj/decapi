@@ -154,8 +154,8 @@ describe('Field', () => {
     }
 
     const { foo } = compileObjectType(Bar).getFields()
-    const compiledFoo = compileObjectType(Foo)
-    expect(foo.type).toBe(compiledFoo)
+
+    expect(foo.type.toString()).toBe('Foo!')
   })
 
   it('Supports references to itself', () => {
@@ -166,7 +166,7 @@ describe('Field', () => {
     }
 
     const { fooNested } = compileObjectType(Foo).getFields()
-    expect(fooNested.type).toBe(compileObjectType(Foo))
+    expect(fooNested.type.toString()).toBe('Foo!')
   })
 
   it('Supports circular references', () => {
@@ -185,8 +185,8 @@ describe('Field', () => {
     const { owner } = compileObjectType(Car).getFields()
     const { car } = compileObjectType(Owner).getFields()
 
-    expect(owner.type).toBe(compileObjectType(Owner))
-    expect(car.type).toBe(compileObjectType(Car))
+    expect(owner.type.toString()).toBe('Owner!')
+    expect(car.type.toString()).toBe('Car!')
   })
 
   it('Throws if pointing to unregistered type', () => {
@@ -444,7 +444,7 @@ describe('Field', () => {
       }
 
       @Field()
-      bar(): string {
+      bar(): string | null {
         return this.baz
       }
 
@@ -462,8 +462,7 @@ describe('Field', () => {
         return { baz: 'castedFromAField' }
       }
       @Field({ type: Foo })
-      castedFieldNullReturning(): Foo {
-        // @ts-expect-error 3/21/2022
+      castedFieldNullReturning(): Foo | null {
         return null
       }
       @Field({ type: Foo })
@@ -632,16 +631,6 @@ describe('Field', () => {
           }
         `
       })
-      expect(result).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "castedQuery": null,
-          },
-          "errors": Array [
-            [GraphQLError: Cannot return null for non-nullable field Foo.bar.],
-          ],
-        }
-      `)
-    })
+      expect(result).toMatchSnapshot()
   })
 })

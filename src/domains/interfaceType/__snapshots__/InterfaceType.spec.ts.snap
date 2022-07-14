@@ -36,8 +36,8 @@ type Katamaran implements IVehicle & IEntity {
 
 type Query {
   vehicles: [IVehicle!]!
-  boat: Boat
-  car: Car
+  boat: Boat!
+  car: Car!
 }"
 `;
 
