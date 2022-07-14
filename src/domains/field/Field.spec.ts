@@ -200,9 +200,7 @@ describe('Field', () => {
 
     expect(() =>
       compileObjectType(Bar).getFields()
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Class Foo cannot be used as a resolve type because it is not an @ObjectType"`
-    )
+    ).toThrowErrorMatchingSnapshot()
   })
 
   describe('native scalar types', () => {

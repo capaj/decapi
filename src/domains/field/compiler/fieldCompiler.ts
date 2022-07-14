@@ -52,7 +52,14 @@ export function compileFieldConfig(
         `Could not infer return type and no type is explicitly configured. In case of circular dependencies make sure to explicitly set a type.`
       )
     }
-    gqlType = resolveType(inferredType)
+    try {
+      gqlType = resolveType(inferredType)
+    } catch (err) {
+      console.error(
+        `field ${target.name}.${fieldName} failed to resolve graphql type`
+      )
+      throw err
+    }
   }
 
   // if was not able to resolve type, try to show some helpful information about it

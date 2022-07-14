@@ -104,4 +104,8 @@ describe('Arguments with @Arg', () => {
     expect(bazArg.type).toBe(GraphQLString)
     expect(bazRequiredArg.type) //.toEqual(new GraphQLNonNull(GraphQLString)) // TODO
   })
+
+  it('can be deprecated', () => {
+    
+  })
 })

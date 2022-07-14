@@ -93,3 +93,8 @@ Object {
   ],
 }
 `;
+
+exports[`Field Throws if pointing to unregistered type 1`] = `
+"class Foo {
+        } cannot be used as a resolve type because it is not an @ObjectType"
+`;

@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLFloat, GraphQLNonNull, graphql } from 'graphql'
+import {
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLNonNull,
+  graphql,
+  GraphQLList
+} from 'graphql'
 import { GraphQLDateTime } from 'graphql-scalars'
 import {
   ObjectType,
@@ -118,5 +124,19 @@ describe('Arguments', () => {
         },
       }
     `)
+  })
+})
+
+describe('fields', () => {
+  it('Infers field with string[] and null', () => {
+    @ObjectType()
+    class Foo {
+      @Field()
+      bar: string[] | null
+    }
+    const { bar } = compileObjectType(Foo).getFields()
+
+    expect(bar.type).toEqual(new GraphQLList(new GraphQLNonNull(GraphQLString)))
+    expect(bar.name).toBe('bar')
   })
 })

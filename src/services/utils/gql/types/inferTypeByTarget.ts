@@ -107,6 +107,9 @@ const inferUnion = (
   }
 
   const rtti = withoutEmpties[0]
+  if (rtti.isArray()) {
+    return inferArrayElementType(rtti.as('array').elementType, true)
+  }
   const type = rtti.is('enum') ? rtti.as('enum').enum : rtti.as('class').class
 
   if (unionTypes.length === 1) {
@@ -114,6 +117,21 @@ const inferUnion = (
   }
 
   return { runtimeType: type, isNullable: true }
+}
+
+const inferArrayElementType = (
+  elementType: ReflectedTypeRef<RtType>,
+  isNullable = false
+) => {
+  if (elementType.isClass()) {
+    return { runtimeType: [elementType.as('class').class], isNullable }
+  } else if (elementType.isUnion()) {
+    const unionTypes = elementType.as('union').types
+
+    return inferUnion(unionTypes)
+  }
+
+  return inferTypeFromRtti(elementType)
 }
 
 /**
@@ -143,17 +161,7 @@ export const inferTypeFromRtti = (rtti: ReflectedTypeRef): IInferResult => {
       return inferTypeFromRtti(firstTypeParameter)
     }
   } else if (rtti.isArray()) {
-    const elementType = rtti.as('array').elementType
-
-    if (elementType.isClass()) {
-      inferred = elementType.as('class').class
-    } else if (elementType.isUnion()) {
-      const unionTypes = elementType.as('union').types
-
-      return inferUnion(unionTypes)
-    }
-
-    return { runtimeType: [inferred], isNullable: false }
+    return inferArrayElementType(rtti.as('array').elementType)
   }
   // console.log('~ inferred', rtti.as('enum'))
 

@@ -50,7 +50,7 @@ export function resolveType({
   }
 
   if (Array.isArray(type)) {
-    return resolveListType(type, isArgument)
+    return resolveListType(type, isArgument, isNullable)
   }
   const enumGetter = enumsRegistry.get(type)
 
@@ -84,14 +84,15 @@ export function resolveType({
     !allowThunk ||
     typeof type !== 'function'
   ) {
+    console.error(type)
     throw new Error(
-      `Class ${type.name} cannot be used as a resolve type because it is not an @ObjectType`
+      `${type} cannot be used as a resolve type because it is not an @ObjectType`
     )
   }
 
   if (isNativeClass(type)) {
     throw new Error(
-      `Class ${type.name} cannot be used as a resolve type because it is not an @ObjectType`
+      `${type} cannot be used as a resolve type because it is not an @ObjectType`
     )
   }
   return resolveType({
@@ -102,7 +103,11 @@ export function resolveType({
   })
 }
 
-function resolveListType(input: any[], isArgument: boolean): GraphQLType {
+function resolveListType(
+  input: any[],
+  isArgument: boolean,
+  isNullable: boolean
+): GraphQLType {
   if (input.length !== 1) {
     throw new Error('List type must have exactly one element')
   }
@@ -110,7 +115,7 @@ function resolveListType(input: any[], isArgument: boolean): GraphQLType {
 
   let resolvedItemType = resolveType({
     runtimeType: itemType,
-    isNullable: false,
+    isNullable,
     allowThunk: true,
     isArgument
   })
@@ -123,9 +128,11 @@ function resolveListType(input: any[], isArgument: boolean): GraphQLType {
     // hacky but it does work
     resolvedItemType = new GraphQLNonNull(resolvedItemType)
   }
-  return new GraphQLNonNull(
-    new GraphQLList(resolvedItemType) // TODO in some cases we might want nullable? Verify
-  )
+  return isNullable
+    ? new GraphQLList(resolvedItemType)
+    : new GraphQLNonNull(
+        new GraphQLList(resolvedItemType) // TODO in some cases we might want nullable? Verify
+      )
 }
 
 export function resolveTypesList(types: Thunk<any[]>): GraphQLType[] {

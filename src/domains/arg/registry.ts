@@ -7,6 +7,7 @@ export interface IArgInnerConfig {
   inferredType?: any
   name?: string
   argIndex: number
+  deprecationReason?: string
 }
 export const argRegistry = new DeepWeakMap<
   Function,
