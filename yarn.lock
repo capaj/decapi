@@ -1885,10 +1885,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^28.1.5":
-  version "28.1.5"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-28.1.5.tgz#4337404efa059adbf96c4ac53b28fdc0af514475"
-  integrity sha512-TLAC2zXxGnohSP3GxgIyJn7yrTeRPDEyVFyCY1NE2wzg392auI+69uk5EPGjUXuhkq/K208J/TWpLG7J8ebIEQ==
+"@types/jest@^28.1.6":
+  version "28.1.6"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-28.1.6.tgz#d6a9cdd38967d2d746861fb5be6b120e38284dd4"
+  integrity sha512-0RbGAFMfcBJKOmqRazM8L98uokwuwD5F8rHrv/ZMbrZBwVOWZUyPG6VFNscjYr/vjM3Vu4fRrCPbOs42AfemaQ==
   dependencies:
     jest-matcher-utils "^28.0.0"
     pretty-format "^28.0.0"
@@ -1925,10 +1925,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.21.tgz#0155ee46f6be28b2ff0342ca1a9b9fd4468bef41"
   integrity sha512-x5W9s+8P4XteaxT/jKF0PSb7XEvo5VmqEWgsMlyeY4ZlLK8I6aH6g5TPPyDlLAep+GYf4kefb7HFyc7PAO3m+Q==
 
-"@types/node@^18.0.4":
-  version "18.0.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.0.4.tgz#48aedbf35efb3af1248e4cd4d792c730290cd5d6"
-  integrity sha512-M0+G6V0Y4YV8cqzHssZpaNCqvYwlCiulmm0PwpNLF55r/+cT8Ol42CHRU1SEaYFH2rTwiiE1aYg/2g2rrtGdPA==
+"@types/node@^18.6.3":
+  version "18.6.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.6.3.tgz#4e4a95b6fe44014563ceb514b2598b3e623d1c98"
+  integrity sha512-6qKpDtoaYLM+5+AFChLhHermMQxc3TOEFIDzrZLPRGHPrLEwqFkkT5Kx3ju05g6X7uDPazz3jHbKPX0KzCjntg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -9423,10 +9423,10 @@ rollup-plugin-typescript2@^0.32.1:
     resolve "^1.20.0"
     tslib "^2.4.0"
 
-rollup@^2.76.0:
-  version "2.76.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.76.0.tgz#c69fe03db530ac53fcb9523b3caa0d3c0b9491a1"
-  integrity sha512-9jwRIEY1jOzKLj3nsY/yot41r19ITdQrhs+q3ggNWhr9TQgduHqANvPpS32RNpzGklJu3G1AJfvlZLi/6wFgWA==
+rollup@^2.77.2:
+  version "2.77.2"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.77.2.tgz#6b6075c55f9cc2040a5912e6e062151e42e2c4e3"
+  integrity sha512-m/4YzYgLcpMQbxX3NmAqDvwLATZzxt8bIegO78FZLl+lAgKJBd1DRAOeEiZcKOIOPjxE6ewHWHNgGEalFXuz1g==
   optionalDependencies:
     fsevents "~2.3.2"
 
@@ -10546,10 +10546,10 @@ tryer@^1.0.1:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-jest@^28.0.6:
-  version "28.0.6"
-  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.6.tgz#d63df9a9908044cd891e066ad869b1a432e70d67"
-  integrity sha512-yLAWoaSJ6c9o+IT7+nyutp5uvwGzhMYb/LD5WEQAi2tBq4ZSAPay4Lf69pP/IU+GFYg87pdg5eADSzuNAFSK4g==
+ts-jest@^28.0.7:
+  version "28.0.7"
+  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.7.tgz#e18757a9e44693da9980a79127e5df5a98b37ac6"
+  integrity sha512-wWXCSmTwBVmdvWrOpYhal79bDpioDy4rTT+0vyUnE3ZzM7LOAAGG9NXwzkEL/a516rQEgnMmS/WKP9jBPCVJyA==
   dependencies:
     bs-logger "0.x"
     fast-json-stable-stringify "2.x"
@@ -10694,10 +10694,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript-rtti@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/typescript-rtti/-/typescript-rtti-0.8.0.tgz#39c5b571e8ef911b04a151a3a7bc55934bdb9e37"
-  integrity sha512-A9IicIbylnaxjHZVTDdmG1d+M3g/NBiaEVV/cZuYeXg3vDf0MWpy3iz6ozW/VucSfNizhJq+wHM1BojENjUQ9A==
+typescript-rtti@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/typescript-rtti/-/typescript-rtti-0.8.2.tgz#72d3082303487867372382b8a9f356d6326309bf"
+  integrity sha512-MZUHMX+Up1+7dYaAcOYSTxKc4PNLNXhuXYBkIzEKvQvxJ6xp7wcjTtiIYmB9+RJxRH5/9phZLqKTMpy20aQ4Aw==
 
 typescript@3.3.4000:
   version "3.3.4000"

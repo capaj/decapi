@@ -1,7 +1,7 @@
 export default {
   preset: 'ts-jest',
   modulePaths: ['<rootDir>/src/'],
-  moduleFileExtensions: ['ts', 'tsx', 'js'],
+  moduleFileExtensions: ['ts', 'js'],
   collectCoverage: false,
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   resolver: 'jest-ts-webcompat-resolver',
